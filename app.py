@@ -25,7 +25,8 @@ data = BytesIO(response.content)
 # ダウンロードしたデータをPandasのDataFrameに読み込む
 df = pd.read_csv(data)
 df = df.drop('Unnamed: 0', axis=1) #「Unnamed: 0」はどこで発生した？
-df = df.drop_duplicates(['ダミーID', '診察日'])
+id = '診察券ID'
+df = df.drop_duplicates([id, '診察日'])
 
 #日付をdatetime型に
 for i in ['診察日', '初診時診察日', '治療前診察日', '最終診察日']:
@@ -35,7 +36,7 @@ for i in ['診察日', '初診時診察日', '治療前診察日', '最終診察
 df = df[df['最終診察日'] < '2024/4/1']
 
 #治療例の抽出（経過観察期間なし）
-tx_list = list(df[df['診療ステータス'] == '治療後']['ダミーID'].unique())
+tx_list = list(df[df['診療ステータス'] == '治療後'][id].unique())
 
 dftx = df[(df['診療ステータス'] == '治療前') + (df['診療ステータス'] == '治療後') + (df['診療ステータス'] == '最終')]
 
@@ -50,16 +51,16 @@ for parameter in parameters:
   dftx[parameter+'変化量'] = dftx['最終'+parameter] - dftx[parameter]
 
 #経過観察症例の抽出
-co_list = list(df[df['診療ステータス'] == '再診前']['ダミーID'].unique())
+co_list = list(df[df['診療ステータス'] == '再診前'][id].unique())
 
-dfco = df[df['ダミーID'].isin(co_list)]
+dfco = df[df[id].isin(co_list)]
 dfco = dfco[(dfco['診療ステータス']  != '治療後') & (dfco['診療ステータス']  != '最終')] #治療後の計測データを除去
 
-dfco = dfco.sort_values(['ダミーID', '診察日']).reset_index() #indexカラムが発生する
+dfco = dfco.sort_values([id, '診察日']).reset_index() #indexカラムが発生する
 
 #経過観察期間の追記
 for index in range(len(dfco)):
-  pre_date = list(dfco[dfco['ダミーID'] == dfco.loc[index, 'ダミーID']]['診察日'])[0]
+  pre_date = list(dfco[dfco[id] == dfco.loc[index, id]]['診察日'])[0]
   dfco.loc[index, '経過観察期間'] = dfco.loc[index, '診察日'] - pre_date
 
 dfco['経過観察期間'] = dfco['経過観察期間']/pd.Timedelta(1,"D") #経過観察期間（日数）をfloat型に
@@ -68,13 +69,13 @@ dfco['経過観察期間（月数）'] = dfco['経過観察期間']/30.4375 #経
 
 #経過観察期間の追記
 for index in range(len(dfco)):
-  pre_date = list(dfco[dfco['ダミーID'] == dfco.loc[index, 'ダミーID']]['診察日'])[0]
+  pre_date = list(dfco[dfco[id] == dfco.loc[index, id]]['診察日'])[0]
   dfco.loc[index, '経過観察期間'] = dfco.loc[index, '診察日'] - pre_date
 
 #データフレームの抽出をシンプルにした 2022/12/11
 
 #全患者の初診時のパラメータのデータフレームを作成
-df_first = df.drop_duplicates(subset='ダミーID') #重複を削除
+df_first = df.drop_duplicates(subset=id) #重複を削除
 
 #最終診察日が2024年3月までの症例（卒業済みと見込まれる症例）に限定する場合、以下を追加する
 df = df[df['最終診察日'] < '2024/4/1']
@@ -94,7 +95,7 @@ for df in [df_first, dftx_pre, dfco_pre]:
 
 #df_firstでは10行がNaNとなる
 
-qurum_members = dftx[dftx['ヘルメット種類'] == 'クルム']['ダミーID'].unique()
+qurum_members = dftx[dftx['ヘルメット種類'] == 'クルム'][id].unique()
 
 
 #類似症例の経過のプロットと患者を合わせて表示する関数の定義　通院回数が増えるにつれて線を伸ばす？
@@ -131,7 +132,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
     dftx_pre['w_delta'] += dfpt_w[parameter][0]*abs(df_first['z_'+parameter] - dfpt_z[parameter][0])**2
 
   #ランキングを作成 11/27追加
-  rank = list(dftx_pre.sort_values('w_delta')['ダミーID'])
+  rank = list(dftx_pre.sort_values('w_delta')[id])
 
   similar_patients=rank[:n] #人数
 
@@ -140,7 +141,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
   #ランク上位から追加　うまく機能しなかった？
   for id in similar_patients: #人数
-    df_temp = dftx[dftx['ダミーID'] == id]
+    df_temp = dftx[dftx[id] == id]
     dftxn = pd.concat([dftxn, df_temp])
 
   #グラフの配置を4×2の表で定義
@@ -167,8 +168,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
   top_id = ''
 
-  for id in dftxn['ダミーID'].unique()[:10]:
-    dftxn_temp = dftxn[dftxn['ダミーID'] == id]
+  for id in dftxn[id].unique()[:10]:
+    dftxn_temp = dftxn[dftxn[id] == id]
     if (dftxn_temp[parameters].iloc[0,:] == dfpt_temp.iloc[0,:]).all():
       top_id = id
       print(top_id)
@@ -178,8 +179,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
     length = len(dftxn_temp)
     for r in range(length):
-      for id in dftxn['ダミーID'].unique()[:10]: #必要に応じて表示数を調整
-        dftxn_temp = dftxn[dftxn['ダミーID'] == id]
+      for id in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
+        dftxn_temp = dftxn[dftxn[id] == id]
 
         if id in qurum_members: #2023/6/1 クルムは星になるようにした
           marker_symbol='star'
@@ -222,8 +223,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
       #fig.write_image("similar_patients_"+str(r)+".png")
 
   else:
-    for id in dftxn['ダミーID'].unique()[:10]: #必要に応じて表示数を調整
-      dftxn_temp = dftxn[dftxn['ダミーID'] == id]
+    for id in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
+      dftxn_temp = dftxn[dftxn[id] == id]
 
       if id in qurum_members: #2023/6/1 クルムは星になるようにした
         marker_symbol='star'
@@ -283,10 +284,10 @@ def tx_rate(dfpt, df_first=df_first, n=30):
   N = 1 #2023/1/22追記
   for i in range(1,n):
     #重み付き二乗和の順に患者リストを作成
-    ply = list(df_first.sort_values('w_delta')['ダミーID'])[:i] #patients like you
+    ply = list(df_first.sort_values('w_delta')[id])[:i] #patients like you
 
     #治療患者から類似症例を抽出
-    dftxn = dftx[dftx['ダミーID'].isin(ply)]
+    dftxn = dftx[dftx[id].isin(ply)]
 
     #全症例からi人を抽出
     dfalln = df_first.sort_values(['w_delta'])[:i]
@@ -312,10 +313,10 @@ def tx_rate(dfpt, df_first=df_first, n=30):
     d=10000
     for i in range(10, n):
       #重み付き二乗和の順に患者リストを作成
-      ply = list(df_first.sort_values('w_delta')['ダミーID'])[:i] #patients like you
+      ply = list(df_first.sort_values('w_delta')[id])[:i] #patients like you
 
       #治療患者から類似症例を抽出
-      dftxn = dftx[dftx['ダミーID'].isin(ply)]
+      dftxn = dftx[dftx[id].isin(ply)]
 
       #全症例からi人を抽出
       dfalln = df_first.sort_values(['w_delta'])[:i]
@@ -338,9 +339,9 @@ def tx_rate(dfpt, df_first=df_first, n=30):
 
 
   #平均との誤差スコアが小さかったN症例のIDをピックアップ
-  ply = list(df_first.sort_values('w_delta')['ダミーID'])[:N] #patients like you
-  dftxn = dftx[dftx['ダミーID'].isin(ply)]
-  dfcon = dfco[dfco['ダミーID'].isin(ply)]
+  ply = list(df_first.sort_values('w_delta')[id])[:N] #patients like you
+  dftxn = dftx[dftx[id].isin(ply)]
+  dfcon = dfco[dfco[id].isin(ply)]
 
   #治療率を計算
   outcome_list = list(df_first.sort_values(['w_delta'])[:N]['診療ステータス'])
@@ -405,16 +406,16 @@ def tx_rate(dfpt, df_first=df_first, n=30):
     st.write('2SD離れているもの：'+d_para)
 
   df_ms = dfallN.describe().iloc[[1,-1]][displayed_parameters] #append()で項目を増やす場合、別のリストを作成した方が良い（parametersを使い回せなくなる）
-  df_ms.loc['mean', 'ダミーID'] = '平均'
-  df_ms.loc['std', 'ダミーID'] = '標準偏差'
+  df_ms.loc['mean', id] = '平均'
+  df_ms.loc['std', id] = '標準偏差'
 
 
-  displayed_parameters = ['ダミーID', '月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', '診療ステータス']
-  dfallN['ダミーID'] = dfallN['ダミーID'].astype(str)
-  dfpt['ダミーID'] = 'お子様'
+  displayed_parameters = [id, '月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', '診療ステータス']
+  dfallN[id] = dfallN[id].astype(str)
+  dfpt[id] = 'お子様'
   df_result=pd.concat([dfpt.drop('APR', axis=1), dfallN[displayed_parameters], df_ms])
   df_result = df_result.fillna('-')
-  df_result = df_result.set_index('ダミーID')
+  df_result = df_result.set_index(id)
   displayed_parameters = ['月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', '診療ステータス']
   #return(df_result[displayed_parameters])
   df_result = df_result.round(1)
@@ -425,7 +426,7 @@ def tx_rate(dfpt, df_first=df_first, n=30):
 #治療を受けた患者から類似症例を抽出する関数の定義
 def similar_pts(dfpt, min=5):
   parameters = ['月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR']
-  dfpt['ダミーID'] = 'お子様'
+  dfpt[id] = 'お子様'
   dfpt['APR'] = dfpt['前頭部対称率']/dfpt['後頭部対称率']
   #print(dfpt)
   #dfpt=dfpt[['月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR', '診察券ID']]
@@ -452,7 +453,7 @@ def similar_pts(dfpt, min=5):
   if dfpt_w['月齢（概算）'].iloc[0] < dfpt_w.T.max().iloc[0]:
     w_m = dfpt_w.T.max().iloc[0]
 
-  count = len(dftx_pre['ダミーID'].unique())
+  count = len(dftx_pre[id].unique())
 
   #print('探索対象は', count, '人です')
   st.write('探索対象は', count, '人です')
@@ -466,8 +467,8 @@ def similar_pts(dfpt, min=5):
   #最適人数の導出
   d=10000
   for i in range(min, n): #最低人数を調整可
-    ply = list(dftx_pre.sort_values('w_delta')['ダミーID'])[:i] #patients like you
-    dftxn = dftx[dftx['ダミーID'].isin(ply)]
+    ply = list(dftx_pre.sort_values('w_delta')[id])[:i] #patients like you
+    dftxn = dftx[dftx[id].isin(ply)]
     dfpren = dftx_pre.sort_values(['w_delta'])[:i] #prepost？
     dfn = dfpren.describe()[1:2][parameters].reset_index()
     df_delta=(dfpt_temp-dfn)**2
@@ -479,11 +480,11 @@ def similar_pts(dfpt, min=5):
   st.write(str(N)+'人のときの平均との誤差スコア：'+str(round(d, 2)))
 
   #平均との誤差スコアが小さかったN症例のIDをピックアップ
-  ply = list(dftx_pre.sort_values('w_delta')['ダミーID'])[:N] #patients like you
-  dftxn = dftx[dftx['ダミーID'].isin(ply)]
+  ply = list(dftx_pre.sort_values('w_delta')[id])[:N] #patients like you
+  dftxn = dftx[dftx[id].isin(ply)]
   #dftxn = dftxn[dftxn['全治療期間m'] != 0] #dftxnから経過観察症例を除外 10/29追記 必要？
 
-  dfpren = dftx_pre.sort_values(['w_delta'])[['ダミーID', '月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR', '全治療期間（月数）',#'通院回数',
+  dfpren = dftx_pre.sort_values(['w_delta'])[[id, '月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR', '全治療期間（月数）',#'通院回数',
                                                   '最終頭囲', '最終短頭率', '最終前頭部対称率', '最終後頭部対称率', '最終CA', '最終CVAI' #なぜか最終の値が初診の値と同じ
                                                   ]][:N]
 
@@ -520,16 +521,16 @@ def similar_pts(dfpt, min=5):
   for parameter in parameters:
     dfpren[parameter+'変化量'] = dfpren['最終'+parameter] - dfpren[parameter]
 
-  df_ms = dfpren.describe()[1:3] #.drop('ダミーID', axis=1) #[parameters] #append()で項目を増やす場合、別のリストを作成した方が良い（parametersを使い回せなくなる）
-  df_ms.loc['mean', 'ダミーID'] = '平均'
-  df_ms.loc['std', 'ダミーID'] = '標準偏差'
+  df_ms = dfpren.describe()[1:3] #.drop(id, axis=1) #[parameters] #append()で項目を増やす場合、別のリストを作成した方が良い（parametersを使い回せなくなる）
+  df_ms.loc['mean', id] = '平均'
+  df_ms.loc['std', id] = '標準偏差'
 
   df_result=pd.concat([dfpt.drop('APR', axis=1), dfpren, df_ms])
   df_result['治療前月齢'] = df_result['月齢（概算）']
   df_result['治療後月齢'] = df_result['月齢（概算）']+df_result['全治療期間（月数）']
   df_result['治療期間'] = df_result['全治療期間（月数）']
 
-  df_result_show = df_result[['ダミーID', '治療前月齢', '治療後月齢', '治療期間', #'通院回数',
+  df_result_show = df_result[[id, '治療前月齢', '治療後月齢', '治療期間', #'通院回数',
                     '頭囲', '最終頭囲', '頭囲変化量',
                     '短頭率', '最終短頭率', '短頭率変化量',
                     '前頭部対称率', '最終前頭部対称率', '前頭部対称率変化量',
@@ -542,7 +543,7 @@ def similar_pts(dfpt, min=5):
 
   df_result_show = df_result_show.round(1)
   df_result_show = df_result_show.fillna('-')
-  df_result_show = df_result_show.set_index('ダミーID')
+  df_result_show = df_result_show.set_index(id)
 
   #return(df_result_show)
   #st.table(df_result_show)
@@ -553,15 +554,15 @@ def similar_pts(dfpt, min=5):
 def get_random_pt():
   import random
   random_float = int(random.random()*10)/10
-  random_id = df_first['ダミーID'].unique()[int(len(df_first['ダミーID'].unique())*random_float)]
-  dfpt = df_first[df_first['ダミーID'] == random_id]
+  random_id = df_first[id].unique()[int(len(df_first[id].unique())*random_float)]
+  dfpt = df_first[df_first[id] == random_id]
   return(dfpt)
 
 #初診患者のパラメータの入力
 #import random
 #random_float = int(random.random()*10)/10
-#random_id = df_first['ダミーID'].unique()[int(len(df_first['ダミーID'].unique())*random_float)]
-#dfpt = df_first[df_first['ダミーID'] == random_id]
+#random_id = df_first[id].unique()[int(len(df_first[id].unique())*random_float)]
+#dfpt = df_first[df_first[id] == random_id]
 dfpt = get_random_pt()
 
 # 今日の日付を取得し、pandasのTimestampオブジェクトに変換
@@ -570,8 +571,8 @@ dfpt = get_random_pt()
 # Timestampを文字列に変換（フォーマット：YYYYMMDD）
 #formatted_date = d.strftime('%Y%m%d')
 #date_as_int = int(formatted_date)  # 文字列を整数に変換
-#random_id =  list(df_first['ダミーID'].unique())[date_as_int**2]
-#dfpt = df_first[df_first['ダミーID'] == random_id]
+#random_id =  list(df_first[id].unique())[date_as_int**2]
+#dfpt = df_first[df_first[id] == random_id]
 
 
 #生年月日
@@ -648,8 +649,8 @@ if st.button('その他のランダムな患者で実行'):
   #初診患者のパラメータの入力
   import random
   random_float = int(random.random()*10)/10
-  random_id = df_first['ダミーID'].unique()[int(len(df_first['ダミーID'].unique())*random_float)]
-  dfpt = df_first[df_first['ダミーID'] == random_id]
+  random_id = df_first[id].unique()[int(len(df_first[id].unique())*random_float)]
+  dfpt = df_first[df_first[id] == random_id]
   bd = pd.to_datetime(datetime.date.today()) - pd.Timedelta(days=dfpt['月齢（概算）'].iloc[0]*30.4375)
   #bd = bd.date()
   m = (d-bd)/pd.Timedelta(30.4375,"D")
