@@ -100,6 +100,7 @@ qurum_members = dftx[dftx['ヘルメット種類'] == 'クルム'][id].unique()
 
 #類似症例の経過のプロットと患者を合わせて表示する関数の定義　通院回数が増えるにつれて線を伸ばす？
 def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
+  id = '診察券ID'
   dfpt['APR'] = dfpt['前頭部対称率']/dfpt['後頭部対称率']
   dftx_pre = dftx[dftx['診療ステータス'] == '治療前']
   #return(dftx_pre)
@@ -255,6 +256,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 #全初診患者から類似症例を抽出する関数を定義
 
 def tx_rate(dfpt, df_first=df_first, n=30):
+  id = '診察券ID'
   dfpt['APR'] = dfpt['前頭部対称率']/dfpt['後頭部対称率']
 
   parameters = ['月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR']
@@ -425,6 +427,7 @@ def tx_rate(dfpt, df_first=df_first, n=30):
 
 #治療を受けた患者から類似症例を抽出する関数の定義
 def similar_pts(dfpt, min=5):
+  id = '診察券ID'
   parameters = ['月齢（概算）', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'APR']
   dfpt[id] = 'お子様'
   dfpt['APR'] = dfpt['前頭部対称率']/dfpt['後頭部対称率']
