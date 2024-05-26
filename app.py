@@ -141,8 +141,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
   dftxn = pd.DataFrame()
 
   #ランク上位から追加　うまく機能しなかった？
-  for id in similar_patients: #人数
-    df_temp = dftx[dftx[id] == id]
+  for id_temp in similar_patients: #人数
+    df_temp = dftx[dftx[id_temp] == id]
     dftxn = pd.concat([dftxn, df_temp])
 
   #グラフの配置を4×2の表で定義
@@ -169,8 +169,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
   top_id = ''
 
-  for id in dftxn[id].unique()[:10]:
-    dftxn_temp = dftxn[dftxn[id] == id]
+  for id_temp in dftxn[id].unique()[:10]:
+    dftxn_temp = dftxn[dftxn[id_temp] == id]
     if (dftxn_temp[parameters].iloc[0,:] == dfpt_temp.iloc[0,:]).all():
       top_id = id
       print(top_id)
@@ -180,7 +180,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
     length = len(dftxn_temp)
     for r in range(length):
-      for id in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
+      for id_temp in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
         dftxn_temp = dftxn[dftxn[id] == id]
 
         if id in qurum_members: #2023/6/1 クルムは星になるようにした
@@ -224,8 +224,8 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
       #fig.write_image("similar_patients_"+str(r)+".png")
 
   else:
-    for id in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
-      dftxn_temp = dftxn[dftxn[id] == id]
+    for id_temp in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
+      dftxn_temp = dftxn[dftxn[id_temp] == id]
 
       if id in qurum_members: #2023/6/1 クルムは星になるようにした
         marker_symbol='star'
