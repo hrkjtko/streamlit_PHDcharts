@@ -133,7 +133,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
     dftx_pre['w_delta'] += dfpt_w[parameter][0]*abs(df_first['z_'+parameter] - dfpt_z[parameter][0])**2
 
   #ランキングを作成 11/27追加
-  rank = list(dftx_pre.sort_values('w_delta')[id])
+  rank = list(dftx_pre.sort_values('w_delta')['診察券ID'])
 
   similar_patients=rank[:n] #人数
 
@@ -142,7 +142,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
   #ランク上位から追加　うまく機能しなかった？
   for id_temp in similar_patients: #人数
-    df_temp = dftx[dftx[id_temp] == id]
+    df_temp = dftx[dftx[id] == id_temp]
     dftxn = pd.concat([dftxn, df_temp])
 
   #グラフの配置を4×2の表で定義
@@ -170,9 +170,9 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
   top_id = ''
 
   for id_temp in dftxn[id].unique()[:10]:
-    dftxn_temp = dftxn[dftxn[id_temp] == id]
+    dftxn_temp = dftxn[dftxn[id] == id_temp]
     if (dftxn_temp[parameters].iloc[0,:] == dfpt_temp.iloc[0,:]).all():
-      top_id = id
+      top_id = id_temp
       print(top_id)
 
   if len(top_id)>0:
@@ -181,20 +181,20 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
     length = len(dftxn_temp)
     for r in range(length):
       for id_temp in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
-        dftxn_temp = dftxn[dftxn[id] == id]
+        dftxn_temp = dftxn[dftxn[id] == id_temp]
 
-        if id in qurum_members: #2023/6/1 クルムは星になるようにした
+        if id_temp in qurum_members: #2023/6/1 クルムは星になるようにした
           marker_symbol='star'
         else:
           marker_symbol='circle'
 
-        if id == top_id:
+        if id_temp == top_id:
           dftxn_temp_temp = dftxn_temp.iloc[0:r, :]
           for i in range(len(para_table)):
             for j in range(len(para_table[i])):
               fig.add_trace(go.Scatter(x=dftxn_temp_temp['月齢（概算）'],
                                       y=dftxn_temp_temp[para_table[i][j]],
-                                      name=str(id)+'_'+str(para_table[i][j]+'_'+str(r)),
+                                      name=str(id_temp)+'_'+str(para_table[i][j]+'_'+str(r)),
                                       #marker=dict(color=list_colors[c]),
                                       marker=dict(size=10, color='green'),
                                       marker_symbol=marker_symbol), row=i+1, col=j+1)
@@ -204,7 +204,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
             for j in range(len(para_table[i])):
               fig.add_trace(go.Scatter(x=dftxn_temp['月齢（概算）'],
                                       y=dftxn_temp[para_table[i][j]],
-                                      name=str(id)+'_'+str(para_table[i][j]),
+                                      name=str(id_temp)+'_'+str(para_table[i][j]),
                                       marker=dict(color=list_colors[c]),
                                       marker_symbol=marker_symbol), row=i+1, col=j+1)
           c += 1
@@ -225,9 +225,9 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
 
   else:
     for id_temp in dftxn[id].unique()[:10]: #必要に応じて表示数を調整
-      dftxn_temp = dftxn[dftxn[id_temp] == id]
+      dftxn_temp = dftxn[dftxn[id] == id_temp]
 
-      if id in qurum_members: #2023/6/1 クルムは星になるようにした
+      if id_temp in qurum_members: #2023/6/1 クルムは星になるようにした
         marker_symbol='star'
       else:
         marker_symbol='circle'
@@ -236,7 +236,7 @@ def tx_plot(dfpt, dftx=dftx, n=10, mo_weight=1):
         for j in range(len(para_table[i])):
           fig.add_trace(go.Scatter(x=dftxn_temp['月齢（概算）'],
                                   y=dftxn_temp[para_table[i][j]],
-                                  name=str(id)+'_'+str(para_table[i][j]),
+                                  name=str(id_temp)+'_'+str(para_table[i][j]),
                                   marker=dict(color=list_colors[c]),
                                   marker_symbol=marker_symbol), row=i+1, col=j+1)
       c += 1
