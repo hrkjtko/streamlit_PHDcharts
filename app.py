@@ -17,7 +17,7 @@ import plotly.figure_factory as ff
 import datetime
 
 
-url = 'https://script.google.com/macros/s/AKfycbxAfH4OZ2cAgq_En4B86F5L-g5aUfNjZUCFo9s51p-YSPj5V_0602KyKfWzzmcuesMn/exec'
+url = API_URL
 
 response = requests.get(url)
 data = response.json()
