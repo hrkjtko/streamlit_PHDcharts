@@ -17,7 +17,7 @@ import plotly.figure_factory as ff
 import datetime
 
 
-url = API_URL
+url = st.secrets["API_URL"]
 
 response = requests.get(url)
 data = response.json()
