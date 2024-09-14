@@ -182,9 +182,8 @@ def animate_BI_PSR(df0, df):
   df = df[df['ダミーID'].isin(common_patients)]
 
   #複数のヘルメットを使用している患者を除外
-  for helmet in df['ヘルメット'].unique():
-    temp = df[df['ヘルメット'] == helmet]['ダミーID'].unique()
-    common_patients = common_patients&set(temp)
+  helmet_counts = df.groupby('ダミーID')['ヘルメット'].nunique()
+  common_patients = helmet_counts[helmet_counts > 1].index.tolist()
 
   df = df[~df['ダミーID'].isin(common_patients)]
 
