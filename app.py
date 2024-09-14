@@ -84,6 +84,7 @@ age_diff_df['治療期間'] = age_diff_df['max'] - age_diff_df['min']
 df_co = pd.merge(df_co, age_diff_df[['ダミーID', '治療期間']], on='ダミーID', how='left')
 
 df_co['ヘルメット'] = '経過観察'
+df_co['治療ステータス'] = df_co['治療ステータス'].mask(~df_co['ダミーID'].duplicated(), '治療後')
 
 df_tx_pre_post = pd.concat([df_tx_pre_post, df_co])
 
