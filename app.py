@@ -173,10 +173,10 @@ def animate_BI_PSR(df0, df):
   ]
 
   #df0 = df.drop_duplicates('ダミーID', keep='first')
-  
+
   df1 = df.drop_duplicates('ダミーID', keep='last')
 
-  common_patients = set(df1['ダミーID'].unique()).intersection(set(df0['ダミーID'].unique()))
+  common_patients = set(df1['ダミーID'].unique()) & (set(df0['ダミーID'].unique()))
 
   df = pd.concat([df0, df1])
   df = df[df['ダミーID'].isin(common_patients)]
@@ -189,7 +189,7 @@ def animate_BI_PSR(df0, df):
 
   fig = px.scatter(df, x='短頭率', y='後頭部対称率', color='治療前PSRレベル', symbol='治療前短頭症', facet_col = 'ヘルメット',
                    hover_data=['ダミーID', '治療期間', '治療前月齢', 'ヘルメット'] + parameters, category_orders=category_orders, animation_frame='治療ステータス', animation_group='ダミーID', color_discrete_sequence=colors)
-  
+  i=0
   for i in range(len(df['ヘルメット'].unique())):
     #短頭率の正常範囲
     fig.add_trace(go.Scatter(x=[106, 106], y=[df['後頭部対称率'].min(), 100], mode='lines', line=dict(color='gray', dash = 'dot'), name='短頭率正常下限'), row=1, col=i+1)
@@ -199,8 +199,9 @@ def animate_BI_PSR(df0, df):
     fig.add_trace(go.Scatter(x=[df['短頭率'].min(), df['短頭率'].max()], y=[90, 90], mode='lines', line=dict(color='gray', dash = 'dot'), name='後頭部対称率正常下限'), row=1, col=i+1)
 
   fig.update_xaxes(range = [df['短頭率'].min()-2,df['短頭率'].max()+2])
-  fig.update_yaxes(range = [df['後頭部対称率'].min()-2,100])
+  fig.update_yaxes(range = [df['後頭部対称率'].min()-2,102])
 
+  #width = 800*(i+1)
   width = 800*len(df['ヘルメット'].unique())
 
   fig.update_layout(height=800, width=width, title='短頭率と後頭部対称率の治療前後の変化')
@@ -247,10 +248,10 @@ with st.form(key='filter_form'):
 # 「実行」ボタンを作成
 #if st.button('実行'):
 if submit_button:
-  filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
+  filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
   # スライダーで選択された範囲でデータをフィルタリング
-  filtered_df = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
-  filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (df_tx_pre_post['治療期間'] <= max_value)]
+  filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
+  filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
 
   filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
 
