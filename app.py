@@ -70,6 +70,23 @@ df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
 df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
+#経過観察
+df_co = df[df['治療ステータス'] == '治療前']
+obs_patients = df_co[df_co['ダミーID'].duplicated()]['ダミーID'].unique()
+df_co = df_co[df_co['ダミーID'].isin(obs_patients)]
+
+# IDごとに最大と最小の年齢を計算
+age_diff_df = df_co.groupby('ダミーID')['月齢'].agg(['max', 'min']).reset_index()
+
+# 年齢差を新しいカラムとして追加
+age_diff_df['治療期間'] = age_diff_df['max'] - age_diff_df['min']
+
+df_co = pd.merge(df_co, age_diff_df[['ダミーID', '治療期間']], on='ダミーID', how='left')
+
+df_co['ヘルメット'] = '経過観察'
+
+df_tx_pre_post = pd.concat([df_tx_pre_post, df_co])
+
 # Streamlitアプリのページ設定
 st.set_page_config(page_title='重症度の分布とヘルメットの種類', layout='wide')
 
@@ -242,6 +259,7 @@ with st.form(key='filter_form'):
   filter_pass0 = st.checkbox('アイメット')
   filter_pass1 = st.checkbox('クルム')
   filter_pass2 = st.checkbox('クルムフィット')
+  filter_pass3 = st.checkbox('経過観察')
 
   submit_button = st.form_submit_button(label='実行')
 
@@ -265,6 +283,10 @@ if submit_button:
   if not filter_pass2:
       filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
       filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
+  if not filter_pass3:
+      filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
+      filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
+
 
   treated_patients = filtered_df['ダミーID'].unique()
   filtered_df = filtered_df[filtered_df['ダミーID'].isin(treated_patients)]
