@@ -71,7 +71,11 @@ df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
-df_co = df[df['治療ステータス'] == '治療前']
+df_pre_age = df_first[['ダミーID', '月齢']]
+df_pre_age = df_pre_age.rename(columns = {'月齢':'治療前月齢'})
+
+df_co = pd.merge(df, df_pre_age, on='ダミーID', how='left')
+df_co = df_co[df_co['治療ステータス'] == '治療前']
 obs_patients = df_co[df_co['ダミーID'].duplicated()]['ダミーID'].unique()
 df_co = df_co[df_co['ダミーID'].isin(obs_patients)]
 
