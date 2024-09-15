@@ -545,9 +545,9 @@ if submit_button:
       filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
 
 
-  treated_patients = filtered_df['ダミーID'].unique()
-  filtered_df = filtered_df[filtered_df['ダミーID'].isin(treated_patients)]
-  filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(treated_patients)]
+  filtered_treated_patients = filtered_df['ダミーID'].unique()
+  filtered_df = filtered_df[filtered_df['ダミーID'].isin(filtered_treated_patients)]
+  filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
 
   animate_BI_PSR(filtered_df0, filtered_df)
   for parameter in parameters:
