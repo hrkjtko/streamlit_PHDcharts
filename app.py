@@ -370,7 +370,7 @@ def takamatsu(df, brachy=False):
 
   df_vis = pd.merge(df_vis_pre, df_vis_post, left_on=['指標', 'Classification'], right_index=True)
   df_vis = df_vis[['Definition', 'Before Helmet', '%_x', 'After Helmet', '%_y']]
-  df_vis = df_vis.rename(columns={'%_x': '%', '%_y': '%'})
+  df_vis = df_vis.rename(columns={'%_x': '%', '%_y': '% '})
 
   #人数を整数に
   df_vis['Before Helmet'] = df_vis['Before Helmet'].mask(df_vis['Before Helmet']%1==0, df_vis['Before Helmet'].astype(int).astype(str))
