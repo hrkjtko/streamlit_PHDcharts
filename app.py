@@ -508,7 +508,7 @@ with st.form(key='filter_form'):
       value=(max([int(df_tx_pre_post['治療期間'].min()),1]), int(df_tx_pre_post['治療期間'].max()))
   )
 
-  st.write('ヘルメットを選択してください')
+  st.write('ヘルメットを選択してください（複数選択可）')
 
   # チェックボックスを作成
   filter_pass0 = st.checkbox('アイメット')
