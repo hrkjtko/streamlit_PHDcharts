@@ -241,6 +241,49 @@ def animate_BI_PSR(df0, df):
 
   st.plotly_chart(fig)
 
+def animate_PSR(df0, df):
+  category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], '治療前短頭症':['軽症', '重症', '正常', '長頭']}
+  colors = [
+    '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
+    '#FF3357', '#33FFA1', '#FFA133', '#33FF8C', '#FF338C', '#8CFF33', '#A1FF33', '#338CFF', '#A133FF', '#33A1FF'
+  ]
+
+  #df0 = df.drop_duplicates('ダミーID', keep='first')
+
+  df1 = df.drop_duplicates('ダミーID', keep='last')
+
+  common_patients = set(df1['ダミーID'].unique()) & (set(df0['ダミーID'].unique()))
+
+  df = pd.concat([df0, df1])
+  df = df[df['ダミーID'].isin(common_patients)]
+
+  #複数のヘルメットを使用している患者を除外
+  df_helmet = df[df['ヘルメット'] != '経過観察']
+  helmet_counts = df_helmet.groupby('ダミーID')['ヘルメット'].nunique()
+  common_patients = helmet_counts[helmet_counts > 1].index.tolist()
+
+  df = df[~df['ダミーID'].isin(common_patients)]
+
+  fig = px.scatter(df, x='月齢', y='後頭部対称率', color='治療前PSRレベル', symbol='治療前短頭症', facet_col = 'ヘルメット',
+                   hover_data=['ダミーID', '治療期間', '治療前月齢', 'ヘルメット'] + parameters, category_orders=category_orders, animation_frame='治療ステータス', animation_group='ダミーID', color_discrete_sequence=colors)
+  i=0
+  for i in range(len(df['ヘルメット'].unique())):
+    #対称率の正常範囲
+    fig.add_trace(go.Scatter(x=[df['月齢'].min(), df['月齢'].max()], y=[90, 90], mode='lines', line=dict(color='gray', dash = 'dot'), name='後頭部対称率正常下限'), row=1, col=i+1)
+
+  fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
+  fig.update_yaxes(range = [df['後頭部対称率'].min()-2,102])
+
+  #width = 800*(i+1)
+  width = 800*len(df['ヘルメット'].unique())
+
+  fig.update_layout(height=800, width=width, title='後頭部対称率の治療前後の変化')
+
+  for annotation in fig.layout.annotations:
+    annotation.text = annotation.text.split('=')[-1]
+
+  st.plotly_chart(fig)
+
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
 for parameter in parameters:
@@ -306,5 +349,6 @@ if submit_button:
   filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(treated_patients)]
 
   animate_BI_PSR(filtered_df0, filtered_df)
+  animate_PSR(filtered_df0, filtered_df)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
