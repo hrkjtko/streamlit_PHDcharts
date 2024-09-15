@@ -77,7 +77,7 @@ df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
-df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前短頭率']]
+df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前短頭症']]
 df_pre_age = df_pre_age.rename(columns = {'月齢':'治療前月齢'})
 
 df_co = pd.merge(df, df_pre_age, on='ダミーID', how='left')
