@@ -39,6 +39,12 @@ df_tx_pre_last = df_tx[df_tx['治療ステータス'] == '治療前'].drop_dupli
 
 df_tx_pre_last['治療前月齢'] = df_tx_pre_last['月齢']
 
+category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
+                   '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
+                   '治療前短頭症':['軽症', '重症', '正常', '長頭'],
+                   '治療前CA重症度':['正常', '軽症', '中等度', '重症', '最重症'],
+                   '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症']}
+
 def add_pre_levels(df):
   df['治療前PSRレベル'] = ''
   df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']>=90, 'レベル1')
@@ -87,7 +93,7 @@ df_period = df_tx_post[['ダミーID', '治療期間']]
 
 df_tx_pre_last['治療期間'] = 0
 
-df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID', '治療前PSRレベル', '治療前ASRレベル', '治療前短頭症']], on='ダミーID', how='left')
+df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID']+list(category_orders.keys())], on='ダミーID', how='left')
 
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
@@ -95,7 +101,7 @@ df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
-df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前ASRレベル', '治療前短頭症']]
+df_pre_age = df_first[['ダミーID', '月齢']+list(category_orders.keys())]
 df_pre_age = df_pre_age.rename(columns = {'月齢':'治療前月齢'})
 
 df_co = pd.merge(df, df_pre_age, on='ダミーID', how='left')
@@ -214,7 +220,6 @@ def show_helmet_proportion():
   st.plotly_chart(fig)
 
 def animate_BI_PSR(df0, df):
-  category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], '治療前短頭症':['軽症', '重症', '正常', '長頭']}
   colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
     '#FF3357', '#33FFA1', '#FFA133', '#33FF8C', '#FF338C', '#8CFF33', '#A1FF33', '#338CFF', '#A133FF', '#33A1FF'
@@ -275,11 +280,6 @@ borders = {'短頭率':[106, 106],
           'CI':[94, 94]}
 
 def animate(parameter, df0, df):
-  category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
-                   '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
-                   '治療前短頭症':['軽症', '重症', '正常', '長頭'],
-                   '治療前CA重症度':['正常', '軽症', '中等度', '重症', '最重症'],
-                   '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症']}
   colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
     '#FF3357', '#33FFA1', '#FFA133', '#33FF8C', '#FF338C', '#8CFF33', '#A1FF33', '#338CFF', '#A133FF', '#33A1FF'
