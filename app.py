@@ -46,6 +46,12 @@ def add_pre_levels(df):
   df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']<85, 'レベル3')
   df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']<80, 'レベル4')
 
+  df['治療前ASRレベル'] = ''
+  df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']>=90, 'レベル1')
+  df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']<90, 'レベル2')
+  df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']<85, 'レベル3')
+  df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']<80, 'レベル4')
+
   df['治療前短頭症'] = ''
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']>126, '長頭')
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<=126, '正常')
@@ -69,7 +75,7 @@ df_period = df_tx_post[['ダミーID', '治療期間']]
 
 df_tx_pre_last['治療期間'] = 0
 
-df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID', '治療前PSRレベル', '治療前短頭症']], on='ダミーID', how='left')
+df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID', '治療前PSRレベル', '治療前ASRレベル', '治療前短頭症']], on='ダミーID', how='left')
 
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
@@ -77,7 +83,7 @@ df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
-df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前短頭症']]
+df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前ASRレベル', '治療前短頭症']]
 df_pre_age = df_pre_age.rename(columns = {'月齢':'治療前月齢'})
 
 df_co = pd.merge(df, df_pre_age, on='ダミーID', how='left')
@@ -241,8 +247,26 @@ def animate_BI_PSR(df0, df):
 
   st.plotly_chart(fig)
 
-def animate_PSR(df0, df):
-  category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], '治療前短頭症':['軽症', '重症', '正常', '長頭']}
+levels = {'短頭率':'治療前短頭症', 
+          '前頭部対称率':'治療前ASRレベル', 
+          'CA':'治療前CA重症度', 
+          '後頭部対称率':'治療前PSRレベル', 
+          'CVAI':'治療前CVAI重症度', 
+          'CI':'治療前短頭症'}
+
+borders = {'短頭率':[106, 106], 
+          '前頭部対称率':[90, 90], 
+          'CA':[6, 6], 
+          '後頭部対称率':[90, 90], 
+          'CVAI':[5, 5], 
+          'CI':[94, 94]}
+
+def animate(parameter, df0, df):
+  category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
+                   '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
+                   '治療前短頭症':['軽症', '重症', '正常', '長頭'],
+                   '治療前CA重症度':['正常', '軽症', '中等度', '重症', '最重症'],
+                   '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症']}
   colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
     '#FF3357', '#33FFA1', '#FFA133', '#33FF8C', '#FF338C', '#8CFF33', '#A1FF33', '#338CFF', '#A133FF', '#33A1FF'
@@ -264,20 +288,20 @@ def animate_PSR(df0, df):
 
   df = df[~df['ダミーID'].isin(common_patients)]
 
-  fig = px.scatter(df, x='月齢', y='後頭部対称率', color='治療前PSRレベル', symbol='治療前短頭症', facet_col = 'ヘルメット',
+  fig = px.scatter(df, x='月齢', y=parameter, color=levels[parameter], facet_col = 'ヘルメット',
                    hover_data=['ダミーID', '治療期間', '治療前月齢', 'ヘルメット'] + parameters, category_orders=category_orders, animation_frame='治療ステータス', animation_group='ダミーID', color_discrete_sequence=colors)
   i=0
   for i in range(len(df['ヘルメット'].unique())):
-    #対称率の正常範囲
-    fig.add_trace(go.Scatter(x=[df['月齢'].min(), df['月齢'].max()], y=[90, 90], mode='lines', line=dict(color='gray', dash = 'dot'), name='後頭部対称率正常下限'), row=1, col=i+1)
+    #正常範囲
+    fig.add_trace(go.Scatter(x=[df['月齢'].min(), df['月齢'].max()], y=borders[parameter], mode='lines', line=dict(color='gray', dash = 'dot'), name=parameter+'の正常との境界'), row=1, col=i+1)
 
   fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
-  fig.update_yaxes(range = [df['後頭部対称率'].min()-2,102])
+  fig.update_yaxes(range = [df[parameter].min()-2,df[parameter].max()+2])
 
   #width = 800*(i+1)
   width = 800*len(df['ヘルメット'].unique())
 
-  fig.update_layout(height=800, width=width, title='後頭部対称率の治療前後の変化')
+  fig.update_layout(height=800, width=width, title=parameter+'の治療前後の変化')
 
   for annotation in fig.layout.annotations:
     annotation.text = annotation.text.split('=')[-1]
@@ -348,8 +372,8 @@ if submit_button:
   filtered_df = filtered_df[filtered_df['ダミーID'].isin(treated_patients)]
   filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(treated_patients)]
 
-  animate_PSR(filtered_df0, filtered_df)
   animate_BI_PSR(filtered_df0, filtered_df)
-  
+  for parameter in parameters:
+    animate（parameter, filtered_df0, filtered_df）
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
