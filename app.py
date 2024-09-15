@@ -219,6 +219,164 @@ def show_helmet_proportion():
   # Streamlitアプリにグラフを表示
   st.plotly_chart(fig)
 
+def takamatsu(df, brachy=False):
+  df_analysis = df.copy()
+  df_analysis['ASR'] = df_analysis['前頭部対称率']
+  df_analysis['PSR'] = df_analysis['後頭部対称率']
+  df_analysis['BI'] = df_analysis['短頭率']
+
+  ranges={'CA':[6, 9, 13, 17], 'CVAI':[5, 7, 10, 14], 'ASR':[90, 85, 80], 'PSR':[90, 85, 80], 'CI':[78, 95], 'BI':[126,106,103,100]}
+
+  dftx_pre = df_analysis[df_analysis['治療ステータス'] == '治療前']
+
+  parameters=['CA', 'CVAI', 'ASR', 'PSR', 'BI', 'CI']
+
+  classifications = {'CA':['normal', 'mild', 'moderate', 'severe', 'very severe'], 'CVAI':['normal', 'mild', 'moderate', 'severe', 'very severe'],
+                    'ASR':['Level1', 'Level2', 'Level3', 'Level4'], 'PSR':['Level1', 'Level2', 'Level3', 'Level4'],
+                    'CI':['dolicho', 'meso', 'brachy'],
+                    'BI':['dolicho', 'meso', 'mild', 'moderate', 'severe']}
+
+  definitions = {'CA':['0-5', '6-8', '9-12', '13-16', '=>17'], 'CVAI':['0-4', '5-6', '7-9', '10-13', '=>14'],
+                    'ASR':['>90', '86-90', '81-85', '=<80'], 'PSR':['>90', '86-90', '81-85', '=<80'],
+                    'CI':['=<78', '79-94', '=>95'], 'BI':['>126', '106-126', '103-106', '100-103', '<100']}
+
+  df_vis = pd.DataFrame()
+  order=0
+
+  for parameter in parameters:
+    df_temp = dftx_pre[['ダミーID', parameter]]
+    df_temp['指標'] = parameter
+    df_temp['Classification'] = ''
+    if parameter in ['CA', 'CVAI']:
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<ranges[parameter][0], 'normal')
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]>=ranges[parameter][i])&(df_temp[parameter]<ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>=ranges[parameter][-1], 'very severe')
+
+    elif parameter in ['ASR', 'PSR']:
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>ranges[parameter][0], 'Level1')
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<=ranges[parameter][i])&(df_temp[parameter]>ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][-1], 'Level4')
+
+    elif parameter == 'CI':
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][0], classifications[parameter][0])
+      df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<ranges[parameter][1])&(df_temp[parameter]>ranges[parameter][0]), classifications[parameter][1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>=ranges[parameter][1], classifications[parameter][2])
+
+    elif parameter == 'BI':
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>ranges[parameter][0], classifications[parameter][0])
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<=ranges[parameter][i])&(df_temp[parameter]>ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][-1], classifications[parameter][-1])
+
+
+    df_temp = df_temp.groupby(['指標', 'Classification']).count()[['ダミーID']] #.astype(int).astype(str)
+
+    df_temp = df_temp.rename(columns={'ダミーID': 'Before Helmet'})
+    df_temp['Before Helmet'] = df_temp['Before Helmet'].fillna(0).astype(int)
+    df_temp['%']=round((df_temp['Before Helmet']/len(dftx_pre))*100, 1)
+    df_temp['%']=df_temp['%'].astype(str)
+    df_temp['%']='('+df_temp['%']+'%)'
+
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'Before Helmet'] = dftx_pre[parameter].mean()
+    sd = dftx_pre[parameter].std()
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), '%'] = '(SD '+str(round(sd, 1))+')'
+
+    df_vis = pd.concat([df_vis, df_temp])
+    if order == 0:
+      df_vis['Definition']=''
+      df_vis['order']=''
+
+    c=0
+    for classification in classifications[parameter]:
+      df_vis.loc[(parameter, classification), 'Definition'] = definitions[parameter][c]
+      df_vis.loc[(parameter, classification), 'order'] = order
+      #print(order)
+      c += 1
+      order += 1
+
+    df_vis.loc[(parameter, 'average: '+parameter+' (SD)'), 'order'] = order
+    order += 1
+
+  df_vis_pre = df_vis.sort_values('order')
+  df_vis_pre = df_vis_pre[['Definition', 'Before Helmet', '%']]
+  df_vis_pre = df_vis_pre.fillna('')
+
+  dftx_post = df_analysis.drop_duplicates('ダミーID', keep='last')
+
+  df_vis = pd.DataFrame()
+  order=0
+
+  for parameter in parameters:
+    #print(parameter)
+    df_temp = dftx_post[['ダミーID', parameter]]
+    df_temp['指標'] = parameter
+    df_temp['Classification'] = ''
+    if parameter in ['CA', 'CVAI']:
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<ranges[parameter][0], 'normal')
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]>=ranges[parameter][i])&(df_temp[parameter]<ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>=ranges[parameter][-1], 'very severe')
+
+    elif parameter in ['ASR', 'PSR']:
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>ranges[parameter][0], 'Level1')
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<=ranges[parameter][i])&(df_temp[parameter]>ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][-1], 'Level4')
+
+    elif parameter == 'CI':
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][0], classifications[parameter][0])
+      df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<ranges[parameter][1])&(df_temp[parameter]>ranges[parameter][0]), classifications[parameter][1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>=ranges[parameter][1], classifications[parameter][2])
+
+    elif parameter == 'BI':
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]>ranges[parameter][0], classifications[parameter][0])
+      for i in range(len(ranges[parameter])-1):
+        df_temp['Classification'] = df_temp['Classification'].mask((df_temp[parameter]<=ranges[parameter][i])&(df_temp[parameter]>ranges[parameter][i+1]), classifications[parameter][i+1])
+      df_temp['Classification'] = df_temp['Classification'].mask(df_temp[parameter]<=ranges[parameter][-1], classifications[parameter][-1])
+
+    df_temp = df_temp.groupby(['指標', 'Classification']).count()[['ダミーID']] #.astype(int).astype(str)
+
+    df_temp = df_temp.rename(columns={'ダミーID': 'After Helmet'})
+    df_temp['After Helmet'] = df_temp['After Helmet'].fillna(0).astype(int)
+    #df_temp['After Helmet'] = df_temp['After Helmet'].astype(int)
+    df_temp['%']=round((df_temp['After Helmet']/len(dftx_post))*100, 1)
+    df_temp = df_temp.fillna(0)
+    df_temp['%']=df_temp['%'].astype(str)
+    df_temp['%']='('+df_temp['%']+'%)'
+
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'After Helmet'] = dftx_post[parameter].mean()
+    sd = dftx_post[parameter].std()
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), '%'] = '(SD '+str(round(sd, 1))+')'
+
+    df_vis = pd.concat([df_vis, df_temp])
+    if order == 0:
+      df_vis['order']=''
+
+    for classification in classifications[parameter]:
+      df_vis.loc[(parameter, classification), 'order'] = order
+      #print(order)
+      order += 1
+
+    df_vis.loc[(parameter, 'average: '+parameter+' (SD)'), 'order'] = order
+    order += 1
+
+  df_vis_post = df_vis.sort_values('order')
+  df_vis_post = df_vis_post.fillna(0)
+
+  df_vis_post['%'] = df_vis_post['%'].mask(df_vis_post['%']==0, '( 0.0%)')
+  df_vis_post = df_vis_post[['After Helmet', '%']]
+
+  df_vis = pd.merge(df_vis_pre, df_vis_post, left_on=['指標', 'Classification'], right_index=True)
+  df_vis = df_vis[['Definition', 'Before Helmet', '%_x', 'After Helmet', '%_y']]
+  df_vis = df_vis.rename(columns={'%_x': '%', '%_y': '%'})
+
+  #人数を整数に
+  df_vis['Before Helmet'] = df_vis['Before Helmet'].mask(df_vis['Before Helmet']%1==0, df_vis['Before Helmet'].astype(int).astype(str))
+  df_vis['After Helmet'] = df_vis['After Helmet'].mask(df_vis['After Helmet']%1==0, df_vis['After Helmet'].astype(int).astype(str))
+  return(df_vis)
+
 def animate_BI_PSR(df0, df):
   colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
@@ -327,6 +485,8 @@ for parameter in parameters:
   hist(parameter)
 
 show_helmet_proportion()
+
+takamatsu(df_tx)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
