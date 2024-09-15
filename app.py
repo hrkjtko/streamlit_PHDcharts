@@ -525,6 +525,7 @@ if submit_button:
   # スライダーで選択された範囲でデータをフィルタリング
   filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
   filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
+  filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
   filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
 
   filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
@@ -553,5 +554,8 @@ if submit_button:
     animate(parameter, filtered_df0, filtered_df)
   for parameter in parameters:
     hist(parameter, filtered_df_first)
+  df_vis = takamatsu(filtered_df_tx_pre_post)
+  #st.dataframe(df_vis)
+  st.table(df_vis)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
