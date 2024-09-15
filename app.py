@@ -88,7 +88,8 @@ age_diff_df['治療期間'] = age_diff_df['max'] - age_diff_df['min']
 df_co = pd.merge(df_co, age_diff_df[['ダミーID', '治療期間']], on='ダミーID', how='left')
 
 df_co['ヘルメット'] = '経過観察'
-df_co['治療ステータス'] = df_co['治療ステータス'].mask(df_co['ダミーID'].duplicated(), '治療後')
+df_co['治療ステータス'] = df_co['治療ステータス'].mask(~df_co['ダミーID'].duplicated(), '治療後')
+df_co['ダミーID'] = df_co['ダミーID'] + 'C'
 
 df_tx_pre_post = pd.concat([df_tx_pre_post, df_co])
 
@@ -247,16 +248,18 @@ with st.form(key='filter_form'):
   # スライダーで範囲を指定
   min_age, max_age = st.slider(
       '月齢の範囲を選択してください',
-      min_value=int(df_tx_pre_post['治療前月齢'].min()),
-      max_value=int(df_tx_pre_post['治療前月齢'].max()),
-      value=(int(df_tx_pre_post['治療前月齢'].min()), int(df_tx_pre_post['治療前月齢'].max()))
+      min_value = min([int(df_tx_pre_post['治療前月齢'].min()),1]),
+      max_value = int(df_tx_pre_post['治療前月齢'].max()),
+      #value=(int(df_tx_pre_post['治療前月齢'].min()), int(df_tx_pre_post['治療前月齢'].max()))
+      value=(min_value, max_value)
   )
 
   min_value, max_value = st.slider(
       '治療期間の範囲を選択してください',
-      min_value=int(df_tx_pre_post['治療期間'].min()),
-      max_value=int(df_tx_pre_post['治療期間'].max()),
-      value=(int(df_tx_pre_post['治療期間'].min()), int(df_tx_pre_post['治療期間'].max()))
+      min_value = min([int(df_tx_pre_post['治療期間'].min()),1]),
+      max_value = int(df_tx_pre_post['治療期間'].max()),
+      #value=(int(df_tx_pre_post['治療期間'].min()), int(df_tx_pre_post['治療期間'].max()))
+      value=(min_value, max_value)
   )
 
   st.write('ヘルメットを選択してください')
