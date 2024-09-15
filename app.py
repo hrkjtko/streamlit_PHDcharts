@@ -279,7 +279,7 @@ def takamatsu(df, brachy=False):
     df_temp['%']=df_temp['%'].astype(str)
     df_temp['%']='('+df_temp['%']+'%)'
 
-    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'Before Helmet'] = dftx_pre[parameter].mean()
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'Before Helmet'] = round(dftx_pre[parameter].mean(), 2)
     sd = dftx_pre[parameter].std()
     df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), '%'] = '(SD '+str(round(sd, 1))+')'
 
@@ -346,7 +346,7 @@ def takamatsu(df, brachy=False):
     df_temp['%']=df_temp['%'].astype(str)
     df_temp['%']='('+df_temp['%']+'%)'
 
-    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'After Helmet'] = dftx_post[parameter].mean()
+    df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), 'After Helmet'] = round(dftx_post[parameter].mean(), 2)
     sd = dftx_post[parameter].std()
     df_temp.loc[(parameter, 'average: '+parameter+' (SD)'), '%'] = '(SD '+str(round(sd, 1))+')'
 
@@ -487,8 +487,8 @@ for parameter in parameters:
 show_helmet_proportion()
 
 df_vis = takamatsu(df_tx)
-st.dataframe(df_vis)
-#st.table(df_vis)
+#st.dataframe(df_vis)
+st.table(df_vis)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
