@@ -348,7 +348,8 @@ if submit_button:
   filtered_df = filtered_df[filtered_df['ダミーID'].isin(treated_patients)]
   filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(treated_patients)]
 
-  animate_BI_PSR(filtered_df0, filtered_df)
   animate_PSR(filtered_df0, filtered_df)
+  animate_BI_PSR(filtered_df0, filtered_df)
+  
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
