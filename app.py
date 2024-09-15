@@ -39,17 +39,22 @@ df_tx_pre_last = df_tx[df_tx['治療ステータス'] == '治療前'].drop_dupli
 
 df_tx_pre_last['治療前月齢'] = df_tx_pre_last['月齢']
 
-df_tx_pre_last['治療前PSRレベル'] = ''
-df_tx_pre_last['治療前PSRレベル'] = df_tx_pre_last['治療前PSRレベル'].mask(df_tx_pre_last['後頭部対称率']>=90, 'レベル1')
-df_tx_pre_last['治療前PSRレベル'] = df_tx_pre_last['治療前PSRレベル'].mask(df_tx_pre_last['後頭部対称率']<90, 'レベル2')
-df_tx_pre_last['治療前PSRレベル'] = df_tx_pre_last['治療前PSRレベル'].mask(df_tx_pre_last['後頭部対称率']<85, 'レベル3')
-df_tx_pre_last['治療前PSRレベル'] = df_tx_pre_last['治療前PSRレベル'].mask(df_tx_pre_last['後頭部対称率']<80, 'レベル4')
+def add_pre_levels(df):
+  df['治療前PSRレベル'] = ''
+  df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']>=90, 'レベル1')
+  df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']<90, 'レベル2')
+  df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']<85, 'レベル3')
+  df['治療前PSRレベル'] = df['治療前PSRレベル'].mask(df['後頭部対称率']<80, 'レベル4')
 
-df_tx_pre_last['治療前短頭症'] = ''
-df_tx_pre_last['治療前短頭症'] = df_tx_pre_last['治療前短頭症'].mask(df_tx_pre_last['短頭率']>126, '長頭')
-df_tx_pre_last['治療前短頭症'] = df_tx_pre_last['治療前短頭症'].mask(df_tx_pre_last['短頭率']<=126, '正常')
-df_tx_pre_last['治療前短頭症'] = df_tx_pre_last['治療前短頭症'].mask(df_tx_pre_last['短頭率']<106, '軽症')
-df_tx_pre_last['治療前短頭症'] = df_tx_pre_last['治療前短頭症'].mask(df_tx_pre_last['短頭率']<100, '重症')
+  df['治療前短頭症'] = ''
+  df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']>126, '長頭')
+  df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<=126, '正常')
+  df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<106, '軽症')
+  df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<100, '重症')
+
+  return(df)
+
+df_tx_pre_last = add_pre_levels(df_tx_pre_last)
 
 #経過も利用する場合
 df_tx_post =  df_tx[df_tx['治療ステータス'] == '治療後']
@@ -71,7 +76,8 @@ df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
-df_pre_age = df_first[['ダミーID', '月齢']]
+df_first = add_pre_levels(df_first)
+df_pre_age = df_first[['ダミーID', '月齢', '治療前PSRレベル', '治療前短頭率']]
 df_pre_age = df_pre_age.rename(columns = {'月齢':'治療前月齢'})
 
 df_co = pd.merge(df, df_pre_age, on='ダミーID', how='left')
