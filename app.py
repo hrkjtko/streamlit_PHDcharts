@@ -250,16 +250,14 @@ with st.form(key='filter_form'):
       '月齢の範囲を選択してください',
       min_value = min([int(df_tx_pre_post['治療前月齢'].min()),1]),
       max_value = int(df_tx_pre_post['治療前月齢'].max()),
-      #value=(int(df_tx_pre_post['治療前月齢'].min()), int(df_tx_pre_post['治療前月齢'].max()))
-      value=(min_value, max_value)
+      value=( min([int(df_tx_pre_post['治療前月齢'].min()),1]), int(df_tx_pre_post['治療前月齢'].max()))
   )
 
   min_value, max_value = st.slider(
       '治療期間の範囲を選択してください',
       min_value = min([int(df_tx_pre_post['治療期間'].min()),1]),
       max_value = int(df_tx_pre_post['治療期間'].max()),
-      #value=(int(df_tx_pre_post['治療期間'].min()), int(df_tx_pre_post['治療期間'].max()))
-      value=(min_value, max_value)
+      value=(min([int(df_tx_pre_post['治療期間'].min()),1]), int(df_tx_pre_post['治療期間'].max()))
   )
 
   st.write('ヘルメットを選択してください')
