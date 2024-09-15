@@ -361,6 +361,7 @@ with st.form(key='filter_form'):
 if submit_button:
   filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
   # スライダーで選択された範囲でデータをフィルタリング
+  filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
   filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
   filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
 
@@ -388,5 +389,7 @@ if submit_button:
   animate_BI_PSR(filtered_df0, filtered_df)
   for parameter in parameters:
     animate(parameter, filtered_df0, filtered_df)
+  for parameter in parameters:
+    hist(parameter, filtered_df_first)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
