@@ -486,7 +486,8 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
-takamatsu(df_tx)
+df_vis = takamatsu(df_tx)
+st.dataframe(df_vis)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
