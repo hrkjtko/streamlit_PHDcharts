@@ -486,9 +486,9 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
-df_vis = takamatsu(df_tx)
+#df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
-st.table(df_vis)
+#st.table(df_vis)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
@@ -554,8 +554,8 @@ if submit_button:
     animate(parameter, filtered_df0, filtered_df)
   for parameter in parameters:
     hist(parameter, filtered_df_first)
-  df_vis = takamatsu(filtered_df_tx_pre_post)
+  #df_vis = takamatsu(filtered_df_tx_pre_post)
   #st.dataframe(df_vis)
-  st.table(df_vis)
+  #st.table(df_vis)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
