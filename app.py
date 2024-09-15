@@ -52,6 +52,18 @@ def add_pre_levels(df):
   df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']<85, 'レベル3')
   df['治療前ASRレベル'] = df['治療前ASRレベル'].mask(df['前頭部対称率']<80, 'レベル4')
 
+  df['治療前CA重症度'] = '正常'
+  df['治療前CA重症度'] = df['治療前CA重症度'].mask(df['CA']>6, '軽症')
+  df['治療前CA重症度'] = df['治療前CA重症度'].mask(df['CA']>9, '中等度')
+  df['治療前CA重症度'] = df['治療前CA重症度'].mask(df['CA']>13, '重症')
+  df['治療前CA重症度'] = df['治療前CA重症度'].mask(df['CA']>17, '最重症')
+
+  df['治療前CVAI重症度'] = '正常'
+  df['治療前CVAI重症度'] = df['治療前CVAI重症度'].mask(df['CVAI']>5, '軽症')
+  df['治療前CVAI重症度'] = df['治療前CVAI重症度'].mask(df['CVAI']>7, '中等度')
+  df['治療前CVAI重症度'] = df['治療前CVAI重症度'].mask(df['CVAI']>10, '重症')
+  df['治療前CVAI重症度'] = df['治療前CVAI重症度'].mask(df['CVAI']>14, '最重症')
+
   df['治療前短頭症'] = ''
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']>126, '長頭')
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<=126, '正常')
