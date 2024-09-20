@@ -504,8 +504,10 @@ with st.form(key='filter_form'):
   min_value, max_value = st.slider(
       '治療期間の範囲を選択してください',
       min_value = max([int(df_tx_pre_post['治療期間'].min()),1]),
-      max_value = int(df_tx_pre_post['治療期間'].max()),
-      value=(max([int(df_tx_pre_post['治療期間'].min()),1]), int(df_tx_pre_post['治療期間'].max()))
+      #max_value = int(df_tx_pre_post['治療期間'].max()),
+      max_value = 12
+      #value=(max([int(df_tx_pre_post['治療期間'].min()),1]), int(df_tx_pre_post['治療期間'].max()))
+      value=(max([int(df_tx_pre_post['治療期間'].min()),1]), 12)
   )
 
   st.write('ヘルメットを選択してください（複数選択可）')
@@ -521,41 +523,44 @@ with st.form(key='filter_form'):
 # 「実行」ボタンを作成
 #if st.button('実行'):
 if submit_button:
-  filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
-  # スライダーで選択された範囲でデータをフィルタリング
-  filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
-  filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
-  filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
-  filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
+  if !filter_pass0 & !filter_pass1 & !filter_pass2 & !filter_pass3:
+    st.write('一つ以上のチェックボックスを選択してください')
+  else:
+    filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
+    # スライダーで選択された範囲でデータをフィルタリング
+    filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
+    filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
+    filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
+    filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
 
-  filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
+    filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
 
-  # チェックボックスの状態に応じてデータをフィルタリング
-  if not filter_pass0:
-      filtered_df = filtered_df[filtered_df['ヘルメット'] != 'アイメット']
-      filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'アイメット']
-  if not filter_pass1:
-      filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルム']
-      filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルム']
-  if not filter_pass2:
-      filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
-      filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
-  if not filter_pass3:
-      filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
-      filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
+    # チェックボックスの状態に応じてデータをフィルタリング
+    if not filter_pass0:
+        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'アイメット']
+        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'アイメット']
+    if not filter_pass1:
+        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルム']
+        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルム']
+    if not filter_pass2:
+        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
+        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
+    if not filter_pass3:
+        filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
+        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
 
 
-  filtered_treated_patients = filtered_df['ダミーID'].unique()
-  filtered_df = filtered_df[filtered_df['ダミーID'].isin(filtered_treated_patients)]
-  filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
+    filtered_treated_patients = filtered_df['ダミーID'].unique()
+    filtered_df = filtered_df[filtered_df['ダミーID'].isin(filtered_treated_patients)]
+    filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
 
-  animate_BI_PSR(filtered_df0, filtered_df)
-  for parameter in parameters:
-    animate(parameter, filtered_df0, filtered_df)
-  for parameter in parameters:
-    hist(parameter, filtered_df_first)
-  #df_vis = takamatsu(filtered_df_tx_pre_post)
-  #st.dataframe(df_vis)
-  #st.table(df_vis)
+    animate_BI_PSR(filtered_df0, filtered_df)
+    for parameter in parameters:
+      animate(parameter, filtered_df0, filtered_df)
+    for parameter in parameters:
+      hist(parameter, filtered_df_first)
+    df_vis = takamatsu(filtered_df_tx_pre_post)
+    #st.dataframe(df_vis)
+    st.table(df_vis)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
