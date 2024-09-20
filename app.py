@@ -538,7 +538,7 @@ def make_table(parameter, df):
                                     ordered=True)
   
   # 指定した順序でgroupbyし、変化量に対して各種統計量を計算
-  result = df_before_after.groupby(['治療前の月齢', '治療前PSRレベル']).agg(
+  result = df_before_after.groupby(['治療前の月齢', levels[parameter]]).agg(
       mean=('変化量', 'mean'),
       std=('変化量', 'std'),
       count=('変化量', 'count'),
@@ -572,6 +572,7 @@ for parameter in parameters:
 show_helmet_proportion()
 
 for parameter in parameters:
+  st.write(parameter+'の治療前後の変化')
   result = make_table(parameter, df_tx_pre_post)
   st.table(result)
 
