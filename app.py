@@ -505,7 +505,7 @@ with st.form(key='filter_form'):
       '治療期間の範囲を選択してください',
       min_value = max([int(df_tx_pre_post['治療期間'].min()),1]),
       #max_value = int(df_tx_pre_post['治療期間'].max()),
-      max_value = 12
+      max_value = 12,
       #value=(max([int(df_tx_pre_post['治療期間'].min()),1]), int(df_tx_pre_post['治療期間'].max()))
       value=(max([int(df_tx_pre_post['治療期間'].min()),1]), 12)
   )
