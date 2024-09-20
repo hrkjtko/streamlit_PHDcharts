@@ -19,7 +19,6 @@ import datetime
 
 url = st.secrets["API_URL"]
 
-
 response = requests.get(url)
 data = response.json()
 
@@ -485,6 +484,23 @@ def animate(parameter, df0, df):
 
   st.plotly_chart(fig)
 
+def line_plot(parameter, df):
+  df_fig = df.copy()
+  if '治療前の月齢' not in df_fig.columns:
+    df_fig['初診時の月齢'] = df_fig['治療前月齢'].apply(lambda x: np.floor(x) if pd.notnull(x) else np.nan)
+    symbol = '初診時の月齢'
+  else:
+    symbol = '治療前の月齢'
+
+  too_young = df_fig[df_fig['月齢'] < 0]['ダミーID'].unique()
+  df_fig = df_fig[~df_fig['ダミーID'].isin(too_young)]
+
+  fig = px.line(df_fig, x='月齢', y=parameter, line_group='ダミーID', color=levels[parameter], symbol = symbol, color_discrete_sequence=colors)
+  fig.update_xaxes(range = [0,12])
+  fig.update_layout(width=900, title='経過観察前後の' + parameter + 'の変化')
+  st.plotly_chart(fig)
+
+
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
 for parameter in parameters:
@@ -536,8 +552,11 @@ if submit_button:
     # スライダーで選択された範囲でデータをフィルタリング
     filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
     filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
+    filtered_df_co = df_co[(df_co['治療前月齢'] >= min_age) & (df_co['治療前月齢'] <= max_age)]
+    
     filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
     filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
+    filtered_df_co = filtered_df_co[(filtered_df_co['治療期間'] >= min_value) & (filtered_df_co['治療期間'] <= max_value)]
 
     filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
 
@@ -565,8 +584,12 @@ if submit_button:
       animate(parameter, filtered_df0, filtered_df)
     for parameter in parameters:
       hist(parameter, filtered_df_first)
-    df_vis = takamatsu(filtered_df_tx_pre_post)
+
+    for parameter in parameters:
+      line_plot(parameter, filtered_df_co)    
+
+    #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
-    st.table(df_vis)
+    #st.table(df_vis)
 else:
     st.write('実行ボタンを押すとグラフが作成されます')
