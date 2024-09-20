@@ -442,12 +442,12 @@ borders = {'短頭率':[106, 106],
           'CVAI':[5, 5],
           'CI':[94, 94]}
 
-def animate(parameter, df0, df):
-  colors = [
+colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
     '#FF3357', '#33FFA1', '#FFA133', '#33FF8C', '#FF338C', '#8CFF33', '#A1FF33', '#338CFF', '#A133FF', '#33A1FF'
   ]
 
+def animate(parameter, df0, df):
   #df0 = df.drop_duplicates('ダミーID', keep='first')
 
   df1 = df.drop_duplicates('ダミーID', keep='last')
