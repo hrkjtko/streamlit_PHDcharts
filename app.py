@@ -16,6 +16,7 @@ from plotly.subplots import make_subplots
 import plotly.figure_factory as ff
 import datetime
 
+from scipy import stats
 
 url = st.secrets["API_URL"]
 
@@ -497,11 +498,71 @@ def line_plot(parameter, df):
   df_fig = df_fig[~df_fig['ダミーID'].isin(too_young)]
 
   fig = px.line(df_fig, x='月齢', y=parameter, line_group='ダミーID', color=levels[parameter], symbol = symbol, category_orders=category_orders, color_discrete_sequence=colors)
+
   fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
   fig.update_yaxes(range = [df[parameter].min()-2,df[parameter].max()+2])
   fig.update_layout(width=900, title='経過観察前後の' + parameter + 'の変化')
+
   st.plotly_chart(fig)
 
+# 95%信頼区間を計算する関数
+def calc_ci(group):
+    mean = group.mean()
+    std = group.std()
+    n = len(group)
+    se = std / np.sqrt(n)
+    
+    # 95%信頼区間を計算
+    ci_lower, ci_upper = stats.t.interval(0.95, n-1, loc=mean, scale=se)
+    
+    return mean, std, se, ci_lower, ci_upper
+
+def make_table(parameter, df):
+  df_temp = df[df['ヘルメット'] != '経過観察']
+  df_temp = df_temp.sort_values('月齢')
+  df_temp = df_temp[['ダミーID', '月齢', parameter, '治療前の月齢', levels[parameter], 'ヘルメット']]
+  df_before = df_temp.drop_duplicates('ダミーID', keep='first')
+  df_before = df_before.rename(columns={parameter:'治療前'+parameter, '月齢':'治療前月齢'})
+  df_before = df_before[['ダミーID', '治療前'+parameter, '治療前月齢']]
+
+  df_after = df_temp.drop_duplicates('ダミーID', keep='last')
+  df_after = df_after.rename(columns={parameter:'治療後'+parameter, '月齢':'治療後月齢'})
+
+  df_before_after = pd.merge(df_before, df_after, on='ダミーID', how='left')
+  
+  df_before_after['変化量'] = df_before_after['治療後'+parameter] - df_before_after['治療前'+parameter]
+  df_before_after['治療期間'] = df_before_after['治療後月齢'] - df_before_after['治療前月齢']
+
+  df_before_after[levels[parameter]] = pd.Categorical(df_before_after[levels[parameter]],
+                                    categories=category_orders[levels[parameter]],
+                                    ordered=True)
+  
+  # 指定した順序でgroupbyし、変化量に対して各種統計量を計算
+  result = df_before_after.groupby(['治療前の月齢', '治療前PSRレベル']).agg(
+      mean=('変化量', 'mean'),
+      std=('変化量', 'std'),
+      count=('変化量', 'count'),
+      min=('変化量', 'min'),
+      max=('変化量', 'max')
+  )
+
+  # 標準誤差と95%信頼区間を計算してカラムに追加
+  result['se'] = result['std'] / np.sqrt(result['count'])
+  result['95% CI lower'], result['95% CI upper'] = stats.t.interval(
+      0.95, result['count']-1, loc=result['mean'], scale=result['se']
+  )
+
+  # 小数点以下2桁に丸める
+  result = result.round(2)
+
+  # 結果表示
+  #import ace_tools as tools; tools.display_dataframe_to_user(name="信頼区間を含む統計結果", dataframe=result)
+  result = result.rename(columns={'mean':'平均', 'std':'標準偏差', 'count':'人数', 'se':'標準誤差', 'min':'最小', 'max':'最大'})
+  result = result.replace(np.nan, '-')
+  result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' - ' + result['95% CI upper'].astype(str)
+  result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
+
+  return (result)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
@@ -509,6 +570,10 @@ for parameter in parameters:
   hist(parameter)
 
 show_helmet_proportion()
+
+for parameter in parameters:
+  result = make_table(parameter, df_tx_pre_post)
+  st.table(result)
 
 #df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
@@ -580,6 +645,7 @@ if submit_button:
     filtered_treated_patients = filtered_df['ダミーID'].unique()
     filtered_df = filtered_df[filtered_df['ダミーID'].isin(filtered_treated_patients)]
     filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
+
 
     st.write('▶を押すと治療前後の変化が見られます。')  
     animate_BI_PSR(filtered_df0, filtered_df)
