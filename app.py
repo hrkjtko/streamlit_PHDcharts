@@ -562,6 +562,7 @@ def make_table(parameter, df):
   result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' - ' + result['95% CI upper'].astype(str)
   result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
   result = result.reset_index()
+  result['治療前の月齢'] = result['治療前の月齢'].astype(int)
   
   return (result)
 
