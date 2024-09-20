@@ -19,6 +19,7 @@ import datetime
 
 url = st.secrets["API_URL"]
 
+
 response = requests.get(url)
 data = response.json()
 
@@ -39,8 +40,8 @@ df_tx_pre_last = df_tx[df_tx['治療ステータス'] == '治療前'].drop_dupli
 
 df_tx_pre_last['治療前月齢'] = df_tx_pre_last['月齢']
 
-category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
-                   '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'], 
+category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'],
+                   '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'],
                    '治療前短頭症':['軽症', '重症', '正常', '長頭'],
                    '治療前CA重症度':['正常', '軽症', '中等度', '重症', '最重症'],
                    '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症']}
@@ -123,6 +124,8 @@ df_co['治療ステータス'] = df_co.groupby('ダミーID')['月齢'].transfor
 df_co['ダミーID'] = df_co['ダミーID'] + 'C'
 
 df_tx_pre_post = pd.concat([df_tx_pre_post, df_co])
+
+df_tx_pre_post['治療前の月齢'] = df_tx_pre_post['治療前月齢'].apply(lambda x: np.floor(x) if pd.notnull(x) else np.nan)
 
 # Streamlitアプリのページ設定
 st.set_page_config(page_title='重症度の分布とヘルメットの種類', layout='wide')
@@ -423,18 +426,18 @@ def animate_BI_PSR(df0, df):
 
   st.plotly_chart(fig)
 
-levels = {'短頭率':'治療前短頭症', 
-          '前頭部対称率':'治療前ASRレベル', 
-          'CA':'治療前CA重症度', 
-          '後頭部対称率':'治療前PSRレベル', 
-          'CVAI':'治療前CVAI重症度', 
+levels = {'短頭率':'治療前短頭症',
+          '前頭部対称率':'治療前ASRレベル',
+          'CA':'治療前CA重症度',
+          '後頭部対称率':'治療前PSRレベル',
+          'CVAI':'治療前CVAI重症度',
           'CI':'治療前短頭症'}
 
-borders = {'短頭率':[106, 106], 
-          '前頭部対称率':[90, 90], 
-          'CA':[6, 6], 
-          '後頭部対称率':[90, 90], 
-          'CVAI':[5, 5], 
+borders = {'短頭率':[106, 106],
+          '前頭部対称率':[90, 90],
+          'CA':[6, 6],
+          '後頭部対称率':[90, 90],
+          'CVAI':[5, 5],
           'CI':[94, 94]}
 
 def animate(parameter, df0, df):
@@ -459,7 +462,7 @@ def animate(parameter, df0, df):
 
   df = df[~df['ダミーID'].isin(common_patients)]
 
-  fig = px.scatter(df, x='月齢', y=parameter, color=levels[parameter], facet_col = 'ヘルメット',
+  fig = px.scatter(df, x='月齢', y=parameter, color=levels[parameter], symbol = '治療前の月齢', facet_col = 'ヘルメット',
                    hover_data=['ダミーID', '治療期間', '治療前月齢', 'ヘルメット'] + parameters, category_orders=category_orders, animation_frame='治療ステータス', animation_group='ダミーID', color_discrete_sequence=colors)
   i=0
   for i in range(len(df['ヘルメット'].unique())):
@@ -486,9 +489,9 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
-#df_vis = takamatsu(df_tx)
+df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
-#st.table(df_vis)
+st.table(df_vis)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
