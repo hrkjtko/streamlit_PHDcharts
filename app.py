@@ -579,12 +579,16 @@ if submit_button:
     filtered_df = filtered_df[filtered_df['ダミーID'].isin(filtered_treated_patients)]
     filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
 
+    st.write('▶を押すと治療前後の変化が見られます。')  
     animate_BI_PSR(filtered_df0, filtered_df)
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
+
+    st.write('対象を制限した場合のヒストグラムを表示します')  
     for parameter in parameters:
       hist(parameter, filtered_df_first)
 
+    st.write('経過観察した場合のグラフを表示します')
     for parameter in parameters:
       line_plot(parameter, filtered_df_co)    
 
