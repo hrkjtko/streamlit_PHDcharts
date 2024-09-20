@@ -44,7 +44,8 @@ category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル
                    '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'],
                    '治療前短頭症':['軽症', '重症', '正常', '長頭'],
                    '治療前CA重症度':['正常', '軽症', '中等度', '重症', '最重症'],
-                   '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症']}
+                   '治療前CVAI重症度':['正常', '軽症', '中等度', '重症', '最重症'],
+                   '治療前の月齢':[i for i in range(15)]}
 
 def add_pre_levels(df):
   df['治療前PSRレベル'] = ''
@@ -489,9 +490,9 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
-df_vis = takamatsu(df_tx)
+#df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
-st.table(df_vis)
+#st.table(df_vis)
 
 with st.form(key='filter_form'):
   st.write('患者を絞ってグラフを作成します')
