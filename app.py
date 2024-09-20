@@ -523,7 +523,7 @@ with st.form(key='filter_form'):
 # 「実行」ボタンを作成
 #if st.button('実行'):
 if submit_button:
-  if !filter_pass0 & !filter_pass1 & !filter_pass2 & !filter_pass3:
+  if not filter_pass0 and not filter_pass1 and not filter_pass2 and not filter_pass3:
     st.write('一つ以上のチェックボックスを選択してください')
   else:
     filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
