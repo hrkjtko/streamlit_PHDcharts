@@ -560,8 +560,8 @@ def make_table(parameter, df):
   result = result.rename(columns={'mean':'平均', 'std':'標準偏差', 'count':'人数', 'se':'標準誤差', 'min':'最小', 'max':'最大'})
   result = result.replace(np.nan, '-')
   result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' - ' + result['95% CI upper'].astype(str)
-  result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
-
+  result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
+  
   return (result)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
