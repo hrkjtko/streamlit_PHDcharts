@@ -497,7 +497,8 @@ def line_plot(parameter, df):
   df_fig = df_fig[~df_fig['ダミーID'].isin(too_young)]
 
   fig = px.line(df_fig, x='月齢', y=parameter, line_group='ダミーID', color=levels[parameter], symbol = symbol, category_orders=category_orders, color_discrete_sequence=colors)
-  fig.update_xaxes(range = [0,12])
+  fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
+  fig.update_yaxes(range = [df[parameter].min()-2,df[parameter].max()+2])
   fig.update_layout(width=900, title='経過観察前後の' + parameter + 'の変化')
   st.plotly_chart(fig)
 
