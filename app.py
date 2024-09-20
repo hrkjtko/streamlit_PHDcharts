@@ -559,7 +559,7 @@ def make_table(parameter, df):
   #import ace_tools as tools; tools.display_dataframe_to_user(name="信頼区間を含む統計結果", dataframe=result)
   result = result.rename(columns={'mean':'平均', 'std':'標準偏差', 'count':'人数', 'se':'標準誤差', 'min':'最小', 'max':'最大'})
   result = result.replace(np.nan, '-')
-  result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' - ' + result['95% CI upper'].astype(str)
+  result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' ～ ' + result['95% CI upper'].astype(str)
   result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
   result = result.reset_index()
   result['治療前の月齢'] = result['治療前の月齢'].astype(int)
