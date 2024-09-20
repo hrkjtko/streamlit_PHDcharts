@@ -95,7 +95,8 @@ df_period = df_tx_post[['ダミーID', '治療期間']]
 
 df_tx_pre_last['治療期間'] = 0
 
-df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID']+list(category_orders.keys())], on='ダミーID', how='left')
+#df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID']+list(category_orders.keys())], on='ダミーID', how='left')
+df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID','治療前PSRレベル', '治療前ASRレベル', '治療前短頭症', '治療前CA重症度', '治療前CVAI重症度']], on='ダミーID', how='left')
 
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
