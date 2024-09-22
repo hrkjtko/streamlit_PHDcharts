@@ -131,8 +131,10 @@ df_tx_pre_post = pd.concat([df_tx_pre_post, df_co])
 
 df_tx_pre_post['治療前の月齢'] = df_tx_pre_post['治療前月齢'].apply(lambda x: np.floor(x) if pd.notnull(x) else np.nan)
 
+df_co['治療前の月齢'] = df_co['治療前月齢'].apply(lambda x: np.floor(x) if pd.notnull(x) else np.nan)
+
 # Streamlitアプリのページ設定
-st.set_page_config(page_title='重症度の分布とヘルメットの種類', layout='wide')
+st.set_page_config(page_title='位置的頭蓋変形に関するデータの可視化', layout='wide')
 
 #治療率ありでパラメータごとにヒストグラムを作成（go.Barを利用）
 def hist(parameter='短頭率', df_first=df_first):
