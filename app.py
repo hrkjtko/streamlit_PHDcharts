@@ -690,7 +690,7 @@ if submit_button:
       st.write('経過観察した場合のグラフを表示します')
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
-        make_table(parameter, filtered_df_co, co = True):
+        make_table(parameter, filtered_df_co, co = True)
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
