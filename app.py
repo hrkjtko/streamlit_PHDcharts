@@ -511,13 +511,13 @@ def calc_ci(group):
     std = group.std()
     n = len(group)
     se = std / np.sqrt(n)
-    
+
     # 95%信頼区間を計算
     ci_lower, ci_upper = stats.t.interval(0.95, n-1, loc=mean, scale=se)
-    
+
     return mean, std, se, ci_lower, ci_upper
 
-def make_table(parameter, df):
+def make_table(parameter, df, co = False):
   df_temp = df[df['ヘルメット'] != '経過観察']
   df_temp = df_temp.sort_values('月齢')
   df_temp = df_temp[['ダミーID', '月齢', parameter, '治療前の月齢', levels[parameter], 'ヘルメット']]
@@ -529,14 +529,14 @@ def make_table(parameter, df):
   df_after = df_after.rename(columns={parameter:'治療後'+parameter, '月齢':'治療後月齢'})
 
   df_before_after = pd.merge(df_before, df_after, on='ダミーID', how='left')
-  
+
   df_before_after['変化量'] = df_before_after['治療後'+parameter] - df_before_after['治療前'+parameter]
   df_before_after['治療期間'] = df_before_after['治療後月齢'] - df_before_after['治療前月齢']
 
   df_before_after[levels[parameter]] = pd.Categorical(df_before_after[levels[parameter]],
                                     categories=category_orders[levels[parameter]],
                                     ordered=True)
-  
+
   # 指定した順序でgroupbyし、変化量に対して各種統計量を計算
   result = df_before_after.groupby(['治療前の月齢', levels[parameter]]).agg(
       mean=('変化量', 'mean'),
@@ -563,7 +563,10 @@ def make_table(parameter, df):
   result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
   result = result.reset_index()
   result['治療前の月齢'] = result['治療前の月齢'].astype(int)
-  
+
+  if not co:
+    result = result.rename(columns={levels[parameter]:'初診時'+parameter, '治療前の月齢':'初診時の月齢'})
+
   return (result)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
@@ -624,7 +627,7 @@ if submit_button:
     filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
     filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
     filtered_df_co = df_co[(df_co['治療前月齢'] >= min_age) & (df_co['治療前月齢'] <= max_age)]
-    
+
     filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
     filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
     filtered_df_co = filtered_df_co[(filtered_df_co['治療期間'] >= min_value) & (filtered_df_co['治療期間'] <= max_value)]
@@ -651,18 +654,43 @@ if submit_button:
     filtered_df0 = filtered_df0[filtered_df0['ダミーID'].isin(filtered_treated_patients)]
 
 
-    st.write('▶を押すと治療前後の変化が見られます。')  
+    st.write('▶を押すと治療前後の変化が見られます。')
     animate_BI_PSR(filtered_df0, filtered_df)
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
 
-    st.write('対象を制限した場合のヒストグラムを表示します')  
+    st.write('対象を制限した場合のヒストグラムを表示します')
     for parameter in parameters:
       hist(parameter, filtered_df_first)
 
-    st.write('経過観察した場合のグラフを表示します')
     for parameter in parameters:
-      line_plot(parameter, filtered_df_co)    
+      st.write(parameter+'の治療前後の変化')
+      result = make_table(parameter, filtered_df_tx_pre_post)
+      st.dataframe(result, width=800)
+
+      if filter_pass0:
+        filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
+        st.write(parameter+'の治療前後の変化(アイメット)')
+        result = make_table(parameter, filtered_df_helmet)
+        st.dataframe(result, width=800)
+
+      if filter_pass1:
+        filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
+        st.write(parameter+'の治療前後の変化(クルム)')
+        result = make_table(parameter, filtered_df_helmet)
+        st.dataframe(result, width=800)
+
+      if filter_pass2:
+        filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
+        st.write(parameter+'の治療前後の変化(クルムフィット)')
+        result = make_table(parameter, filtered_df_helmet)
+        st.dataframe(result, width=800)
+
+    if filter_pass3:
+      st.write('経過観察した場合のグラフを表示します')
+      for parameter in parameters:
+        line_plot(parameter, filtered_df_co)
+        make_table(parameter, filtered_df_co, co = True):
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
