@@ -576,7 +576,8 @@ show_helmet_proportion()
 for parameter in parameters:
   st.write(parameter+'の治療前後の変化')
   result = make_table(parameter, df_tx_pre_post)
-  st.table(result)
+  #st.table(result)
+  st.dataframe(result, width=800)
 
 #df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
