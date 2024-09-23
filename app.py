@@ -578,9 +578,11 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
+df_table = df_tx_pre_post[df_tx_pre_post['治療期間'] > 30]
+
 for parameter in parameters:
-  st.write(parameter+'の治療前後の変化')
-  result = make_table(parameter, df_tx_pre_post)
+  st.write(parameter+'の治療前後の変化（30日以上の治療）')
+  result = make_table(parameter, df_table)
   #st.table(result)
   st.dataframe(result, width=800)
 
