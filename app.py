@@ -520,7 +520,10 @@ def calc_ci(group):
     return mean, std, se, ci_lower, ci_upper
 
 def make_table(parameter, df, co = False):
-  df_temp = df[df['ヘルメット'] != '経過観察']
+  if !co:
+    df_temp = df[df['ヘルメット'] != '経過観察']
+  else:
+    df_temp = df.copy()
   df_temp = df_temp.sort_values('月齢')
   df_temp = df_temp[['ダミーID', '月齢', parameter, '治療前の月齢', levels[parameter], 'ヘルメット']]
   df_before = df_temp.drop_duplicates('ダミーID', keep='first')
@@ -722,7 +725,6 @@ if submit_button:
       st.write('経過観察した場合のグラフを表示します')
       count = len(filtered_df_co['ダミーID'].unique())
       st.write(count, '人')
-      st.dataframe(filtered_df_co, width=800)
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
         result = make_table(parameter, filtered_df_co, co = True)
