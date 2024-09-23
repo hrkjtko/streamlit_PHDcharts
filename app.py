@@ -640,15 +640,19 @@ if submit_button:
     if not filter_pass0:
         filtered_df = filtered_df[filtered_df['ヘルメット'] != 'アイメット']
         filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'アイメット']
+        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'アイメット']
     if not filter_pass1:
         filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルム']
         filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルム']
+        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルム']
     if not filter_pass2:
         filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
         filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
+        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルムフィット']
     if not filter_pass3:
         filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
         filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
+        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != '経過観察']
 
 
     filtered_treated_patients = filtered_df['ダミーID'].unique()
