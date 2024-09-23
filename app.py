@@ -545,7 +545,11 @@ def make_table(parameter, df, co = False):
       std=('変化量', 'std'),
       count=('変化量', 'count'),
       min=('変化量', 'min'),
-      max=('変化量', 'max')
+      max=('変化量', 'max'),
+      mean_d=('治療期間', 'mean'),
+      std_d=('治療期間', 'std'),
+      min_d=('治療期間', 'min'),
+      max_d=('治療期間', 'max')
   )
 
   # 標準誤差と95%信頼区間を計算してカラムに追加
@@ -553,16 +557,21 @@ def make_table(parameter, df, co = False):
   result['95% CI lower'], result['95% CI upper'] = stats.t.interval(
       0.95, result['count']-1, loc=result['mean'], scale=result['se']
   )
+  result['95% CI lower_d'], result['95% CI upper_d'] = stats.t.interval(
+      0.95, result['count']-1, loc=result['mean_d'], scale=result['se_d']
+  )
 
   # 小数点以下2桁に丸める
   result = result.round(2)
 
   # 結果表示
   #import ace_tools as tools; tools.display_dataframe_to_user(name="信頼区間を含む統計結果", dataframe=result)
-  result = result.rename(columns={'mean':'平均', 'std':'標準偏差', 'count':'人数', 'se':'標準誤差', 'min':'最小', 'max':'最大'})
+  result = result.rename(columns={'mean':'平均', 'std':'標準偏差', 'count':'人数', 'se':'標準誤差', 'min':'最小', 'max':'最大',
+                                  'mean_d':'平均治療期間', 'std_d':'標準偏差 ', 'se_d':'標準誤差 ', 'min_d':'最小 ', 'max_d':'最大 '})
   result = result.replace(np.nan, '-')
   result['95% 信頼区間'] = result['95% CI lower'].astype(str) + ' ～ ' + result['95% CI upper'].astype(str)
-  result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数']]
+  result['95% 信頼区間 '] = result['95% CI lower_d'].astype(str) + ' ～ ' + result['95% CI upper_d'].astype(str)
+  result = result[['平均', '95% 信頼区間', '標準偏差', '最小', '最大', '人数', '平均治療期間', '95% 信頼区間 ', '標準偏差 ', '最小 ', '最大 ']]
   result = result.reset_index()
   result['治療前の月齢'] = result['治療前の月齢'].astype(int)
 
