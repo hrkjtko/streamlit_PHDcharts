@@ -580,7 +580,7 @@ def make_table(parameter, df, co = False):
   result['治療前の月齢'] = result['治療前の月齢'].astype(int)
 
   if co:
-    result = result.rename(columns={levels[parameter]:'初診時'+parameter, '治療前の月齢':'初診時の月齢'})
+    result = result.rename(columns={levels[parameter]:'初診時'+parameter, '治療前の月齢':'初診時の月齢', '平均治療期間': '平均受診間隔'})
 
   return (result)
 
