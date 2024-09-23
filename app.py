@@ -557,6 +557,7 @@ def make_table(parameter, df, co = False):
   result['95% CI lower'], result['95% CI upper'] = stats.t.interval(
       0.95, result['count']-1, loc=result['mean'], scale=result['se']
   )
+  result['se_d'] = result['std_d'] / np.sqrt(result['count'])
   result['95% CI lower_d'], result['95% CI upper_d'] = stats.t.interval(
       0.95, result['count']-1, loc=result['mean_d'], scale=result['se_d']
   )
