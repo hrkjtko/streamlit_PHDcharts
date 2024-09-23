@@ -520,7 +520,7 @@ def calc_ci(group):
     return mean, std, se, ci_lower, ci_upper
 
 def make_table(parameter, df, co = False):
-  if !co:
+  if not co:
     df_temp = df[df['ヘルメット'] != '経過観察']
   else:
     df_temp = df.copy()
