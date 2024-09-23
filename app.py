@@ -578,7 +578,8 @@ for parameter in parameters:
 
 show_helmet_proportion()
 
-df_table = df_tx_pre_post[df_tx_pre_post['治療期間'] > 30]
+table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 30]['ダミーID'].unique()
+df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
 
 for parameter in parameters:
   st.write(parameter+'の治療前後の変化（30日以上の治療）')
