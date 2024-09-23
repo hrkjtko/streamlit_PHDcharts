@@ -638,14 +638,15 @@ if submit_button:
     st.write('一つ以上のチェックボックスを選択してください')
   else:
     filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
-    # スライダーで選択された範囲でデータをフィルタリング
+        # スライダーで選択された範囲でデータをフィルタリング
     filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
     filtered_df = filtered_df[(filtered_df['治療前月齢'] >= min_age) & (filtered_df['治療前月齢'] <= max_age)]
     filtered_df_co = df_co[(df_co['治療前月齢'] >= min_age) & (df_co['治療前月齢'] <= max_age)]
-
     filtered_df_tx_pre_post = df_tx_pre_post[(df_tx_pre_post['治療前月齢'] >= min_age) & (df_tx_pre_post['治療前月齢'] <= max_age)]
+
     filtered_df = filtered_df[(filtered_df['治療期間'] >= min_value) & (filtered_df['治療期間'] <= max_value)]
     filtered_df_co = filtered_df_co[(filtered_df_co['治療期間'] >= min_value) & (filtered_df_co['治療期間'] <= max_value)]
+    filtered_df_tx_pre_post = filtered_df_tx_pre_post[(filtered_df_tx_pre_post['治療期間'] >= min_value) & (filtered_df_tx_pre_post['治療期間'] <= max_value)]
 
     filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
 
