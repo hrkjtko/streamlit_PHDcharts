@@ -675,27 +675,33 @@ if submit_button:
 
       if filter_pass0:
         filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
-        st.write(parameter+'の治療前後の変化(アイメット)')
+        count = len(filtered_df_helmet[filtered_df_helmet['ダミーID']].unique())
+        st.write(parameter+'の治療前後の変化(アイメット)　', count, '人')
         result = make_table(parameter, filtered_df_helmet)
         st.dataframe(result, width=800)
 
       if filter_pass1:
         filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
-        st.write(parameter+'の治療前後の変化(クルム)')
+        count = len(filtered_df_helmet[filtered_df_helmet['ダミーID']].unique())
+        st.write(parameter+'の治療前後の変化(クルム)　', count, '人')
         result = make_table(parameter, filtered_df_helmet)
         st.dataframe(result, width=800)
 
       if filter_pass2:
         filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
-        st.write(parameter+'の治療前後の変化(クルムフィット)')
+        count = len(filtered_df_helmet[filtered_df_helmet['ダミーID']].unique())
+        st.write(parameter+'の治療前後の変化(クルムフィット)　', count, '人')
         result = make_table(parameter, filtered_df_helmet)
         st.dataframe(result, width=800)
 
     if filter_pass3:
       st.write('経過観察した場合のグラフを表示します')
+      count = len(filtered_df_co[filtered_df_co['ダミーID']].unique())
+      st.write(count, '人')
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
         result = make_table(parameter, filtered_df_co, co = True)
+        #st.table(result)
         st.dataframe(result, width=800)
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
