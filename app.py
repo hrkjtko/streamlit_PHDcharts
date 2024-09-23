@@ -722,6 +722,7 @@ if submit_button:
       st.write('経過観察した場合のグラフを表示します')
       count = len(filtered_df_co['ダミーID'].unique())
       st.write(count, '人')
+      st.dataframe(filtered_df_co, width=800)
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
         result = make_table(parameter, filtered_df_co, co = True)
