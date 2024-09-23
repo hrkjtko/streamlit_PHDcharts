@@ -672,7 +672,7 @@ if submit_button:
     filtered_treated_patients = filtered_df_tx_pre_post[filtered_df_tx_pre_post['治療ステータス'] == '治療後']['ダミーID'].unique()
     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ダミーID'].isin(filtered_treated_patients)]
     
-        for parameter in parameters:
+    for parameter in parameters:
       count = len(filtered_df_tx_pre_post['ダミーID'].unique())
       st.write(parameter+'の治療前後の変化　', str(count), '人')
       result = make_table(parameter, filtered_df_tx_pre_post)
