@@ -24,6 +24,7 @@ response = requests.get(url)
 data = response.json()
 
 df = pd.DataFrame(data['経過'])
+df = df.sort_values('月齢')
 
 parameters = ['月齢', '前後径', '左右径', '頭囲', '短頭率', '前頭部対称率', 'CA', '後頭部対称率', 'CVAI', 'CI']
 df[parameters] = df[parameters].apply(pd.to_numeric, errors='coerce')
