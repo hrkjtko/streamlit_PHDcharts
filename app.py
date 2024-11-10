@@ -387,6 +387,214 @@ def takamatsu(df, brachy=False):
   df_vis['After Helmet'] = df_vis['After Helmet'].mask(df_vis['After Helmet']%1==0, df_vis['After Helmet'].astype(int).astype(str))
   return(df_vis)
 
+def graham(df, parameter, border=False):
+  fig = make_subplots(
+      rows=1, cols=6,
+      # 初めに各グラフのタイトルを設定
+      subplot_titles=('-3', '4', '5', '6', '7', '8-'),
+      shared_yaxes=True
+  )
+
+  df_fig = df.copy()
+
+  df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
+  df_fig = df_fig.drop_duplicates('ダミーID', keep='last')
+
+  severities = {'後頭部対称率':'治療前PSRレベル', '前頭部対称率':'治療前ASRレベル', 'CA':'治療前CA（斜頭）', 'CVAI':'治療前CVAI（斜頭）', '短頭率':'治療前短頭症', 'CI':'治療前短頭症'}
+  severities = severities[parameter]
+
+  parameter_names = {'後頭部対称率':'PSR', '前頭部対称率':'ASR', 'CA':'CA', 'CVAI':'CVAI', '短頭率':'BI', 'CI':'CI'}
+  parameter_name = parameter_names[parameter]
+
+  if parameter in ['後頭部対称率', '前頭部対称率']:
+    levels = ['レベル1', 'レベル2', 'レベル3', 'レベル4']
+  elif parameter in ['CA', 'CVAI']:
+    levels = ['軽症', '中等症', '重症', '最重症']
+  else:
+    levels = ['軽症', '中等症', '重症']
+
+  line_colors = ['blue', 'green', 'black', 'red', 'purple']
+  #line_colors = ['rgb(150,150,150)', 'rgb(100,100,100)', 'rgb(50,50,50)', 'black']
+  dashes = ['solid', 'dashdot', 'dash', 'dot'] #'longdash', 'longdashdot'
+
+  import math
+  ages = list(df_fig['治療前月齢'].unique())
+  ages = list(set(math.floor(num) for num in ages))
+  ages.sort()  # 元の順序に近づけるためにソート
+  #ages = sorted(ages)
+
+  max_sd0, max_sd1 = 0, 0
+
+  range_max = 0
+
+  for i, age in enumerate(ages, 1):
+    #df_temp = df_fig[df_fig['治療前月齢'] == age]
+    df_temp = df_fig[(df_fig['治療前月齢'] >= age) & (df_fig['治療前月齢'] < age+1)]
+    #df_pre_min = df_pre[df_pre['治療前月齢'] == age]
+    df_pre_min = df_pre[df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
+
+    min = df_pre_min['月齢'].min()
+    max = df_temp['月齢'].max()
+
+    #for level, line_color in zip(levels, line_colors):
+    for level, line_color, dash in zip(levels, line_colors, dashes):
+      df_temp_temp = df_temp[df_temp[severities] == level]
+      temp_members = df_temp_temp['ダミーID'].unique()
+      df_pre_temp = df_pre[df_pre['ダミーID'].isin(temp_members)]
+
+      x=[]
+      x_sd=[]
+      y=[]
+      y_sd=[]
+
+      mean0 = df_pre_temp['月齢'].mean()
+      x.append(mean0)
+
+      mean1 = df_temp_temp['月齢'].mean()
+      x.append(mean1)
+
+      sd0 = df_pre_temp['月齢'].std()
+      x_sd.append(sd0)
+
+      if max_sd0 < sd0:
+        max_sd0 = sd0
+
+      if min < mean0 - sd0:
+        min = mean0 - sd0*1.1
+
+      sd = df_temp_temp['月齢'].std()
+      x_sd.append(sd)
+
+      if max_sd1 < sd:
+        max_sd1 = sd
+
+      if max < mean1 + sd:
+        max = mean1 + sd*1.1 + sd0*1.1
+
+      #月齢の幅
+      range = max - min
+      if range_max < range:
+        range_max = range
+
+      #y.append(df_pre_temp['治療前'+parameter].mean())
+      y.append(df_pre_temp[parameter].mean())
+      #y.append(df_temp_temp['最終'+parameter].mean())
+      y.append(df_temp_temp[parameter].mean())
+      #y_sd.append(df_pre_temp['治療前'+parameter].std())
+      y_sd.append(df_pre_temp[parameter].std())
+      #y_sd.append(df_temp_temp['最終'+parameter].std())
+      y_sd.append(df_temp_temp[parameter].std())
+
+      if i == 1:
+        d = go.Scatter(x=x, y=y,
+                    error_x=dict(type='data', array=x_sd, visible=True),
+                    error_y=dict(type='data', array=y_sd, visible=True),
+                    mode='markers+lines',
+                    #line=dict(color = line_color),
+                    line=dict(color = line_color, dash = dash),
+                    #ids=[level, level],
+                    #name=age + level
+                    name = level,
+                    legendgroup=age)
+      else:
+        d = go.Scatter(x=x, y=y,
+                    error_x=dict(type='data', array=x_sd, visible=True),
+                    error_y=dict(type='data', array=y_sd, visible=True),
+                    mode='markers+lines',
+                    #line=dict(color = line_color),
+                    line=dict(color = line_color, dash = dash),
+                    showlegend=False,
+                    #ids=[level, level],
+                    #name=age + level
+                    name = level,
+                    legendgroup=age)
+
+      fig.append_trace(d, 1, i)
+
+    if border:
+      if parameter == 'CVAI':
+        upper_border = 6.25
+        lower_border = 3.5
+      elif parameter == 'CA':
+        upper_border = 6
+        lower_border = False
+      elif parameter == 'CI':
+        upper_border = 94
+        lower_border = False
+      else:
+        upper_border = 90
+        lower_border = False
+
+
+      #CVAI = 6.25
+      d = go.Scatter(mode='lines',
+                    x=[0, 25],
+                      y=[upper_border]*2,
+                      line=dict(color = 'black', dash='dot'),
+                      showlegend=False,
+                      #name='CVAI=5%'
+                      )
+      fig.append_trace(d, 1, i)
+
+      if lower_border:
+        #CVAI = 3.5
+        d = go.Scatter(mode='lines',
+                      x=[0, 25],
+                        y=[lower_border]*2,
+                        line=dict(color = 'black', dash='dash'),
+                        showlegend=False,
+                        #name='CVAI=3.5%'
+                        )
+        fig.append_trace(d, 1, i)
+
+
+
+  #print(range_max)
+
+  #表示範囲の設定
+  if parameter == 'CVAI':
+    min, max = 0, 18
+
+  elif parameter == 'CA':
+    min, max = 0, 25
+
+  elif parameter == '後頭部対称率':
+    min, max = 70, 100
+
+  elif parameter == '短頭率':
+    min, max = 94, 114
+  else:
+    min, max = 89, 109
+
+  premargin = 0.5
+  if max_sd0 > 0.5:
+    premargin = max_sd0*1.1
+
+  layout = go.Layout(width=1600, height=900,
+                    title='Change in '+parameter_name+' on Age & Severity Groups',
+                    #paper_bgcolor='white',
+                    xaxis=dict(title='age', range=[2-premargin, 1.5+range_max]),
+                    xaxis2=dict(title='age', range=[4-premargin, 3.5+range_max]),
+                    xaxis3=dict(title='age', range=[5-premargin, 4.5+range_max]),
+                    xaxis4=dict(title='age', range=[6-premargin, 5.5+range_max]),
+                    xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
+                    xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
+                    yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
+                    yaxis2=dict(range=[min, max]),
+                    yaxis3=dict(range=[min, max]),
+                    yaxis4=dict(range=[min, max]),
+                    yaxis5=dict(range=[min, max]),
+                    yaxis6=dict(range=[min, max]))
+
+  fig['layout'].update(layout)
+
+  fig.update_layout(plot_bgcolor="white")
+  fig.update_xaxes(linecolor='gray', linewidth=2)
+  fig.update_yaxes(gridcolor='lightgray')
+
+  #return(fig)
+  st.plotly_chart(fig)
+
 def animate_BI_PSR(df0, df):
   colors = [
     '#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FF8C33', '#33FFF1', '#8C33FF', '#FF5733', '#57FF33', '#5733FF',
@@ -590,7 +798,11 @@ parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CV
 for parameter in parameters:
   hist(parameter)
 
+for parameter in parameters:
+  graham(df_tx_pre_post)
+
 show_helmet_proportion()
+
 
 table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'].unique()
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
@@ -600,6 +812,8 @@ for parameter in parameters:
   result = make_table(parameter, df_table)
   #st.table(result)
   st.dataframe(result, width=800)
+
+for parameter in parameters:
 
 #df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
