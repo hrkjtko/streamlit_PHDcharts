@@ -437,6 +437,9 @@ def graham(df, parameter, border=False):
   range_max = 0
 
   for i, age in enumerate(ages, 1):
+    if i > 6:  # 最大6列まで
+      break
+      
     #df_temp = df_fig[df_fig['治療前月齢'] == age]
     df_temp = df_fig[(df_fig['治療前月齢'] >= age) & (df_fig['治療前月齢'] < age+1)]
     #df_pre_min = df_pre[df_pre['治療前月齢'] == age]
@@ -451,10 +454,7 @@ def graham(df, parameter, border=False):
       temp_members = df_temp_temp['ダミーID'].unique()
       df_pre_temp = df_pre[df_pre['ダミーID'].isin(temp_members)]
 
-      x=[]
-      x_sd=[]
-      y=[]
-      y_sd=[]
+      x, x_sd, y, y_sd = [], [], [], []
 
       mean0 = df_pre_temp['月齢'].mean()
       x.append(mean0)
@@ -518,8 +518,9 @@ def graham(df, parameter, border=False):
                     name = level,
                     legendgroup=age)
 
-      print(fig.print_grid())  #グリッド構造を確認
+      #print(fig.print_grid())  #グリッド構造を確認
       fig.append_trace(d, 1, i)
+      fig.add_trace(d, row=1, col=i)
 
     if border:
       if parameter == 'CVAI':
@@ -544,7 +545,8 @@ def graham(df, parameter, border=False):
                       showlegend=False,
                       #name='CVAI=5%'
                       )
-      fig.append_trace(d, 1, i)
+      #fig.append_trace(d, 1, i)
+      fig.add_trace(d, row=1, col=i)
 
       if lower_border:
         #CVAI = 3.5
@@ -555,9 +557,8 @@ def graham(df, parameter, border=False):
                         showlegend=False,
                         #name='CVAI=3.5%'
                         )
-        fig.append_trace(d, 1, i)
-
-
+        #fig.append_trace(d, 1, i)
+        fig.add_trace(d, row=1, col=i)
 
   #print(range_max)
 
