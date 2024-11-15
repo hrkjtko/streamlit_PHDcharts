@@ -408,6 +408,7 @@ def graham(df, parameter, border=False):
   df_fig = df.copy()
 
   df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
+  df_fig = df_fig.sort_values('月齢')
   df_fig = df_fig.drop_duplicates('ダミーID', keep='last')
 
   severities = {'後頭部対称率':'治療前PSRレベル', '前頭部対称率':'治療前ASRレベル', 'CA':'治療前CA重症度', 'CVAI':'治療前CVAI重症度', '短頭率':'治療前短頭症', 'CI':'治療前短頭症'}
