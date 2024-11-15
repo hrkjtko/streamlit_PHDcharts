@@ -872,10 +872,9 @@ table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
 
 for parameter in parameters:
-  graham(df_table, parameter)
-
-for parameter in parameters:
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
+  graham(df_table, parameter)
+  
   result = make_table(parameter, df_table)
   #st.table(result)
   st.dataframe(result, width=800)
