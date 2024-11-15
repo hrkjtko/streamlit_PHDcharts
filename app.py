@@ -770,7 +770,7 @@ def make_table(parameter, df, co = False):
                                     ordered=True)
 
   # 指定した順序でgroupbyし、変化量に対して各種統計量を計算
-  result = df_before_after.groupby(['治療前の月齢', levels[parameter]]).agg(
+  result = df_before_after.groupby(['治療前の月齢', levels[parameter]], observed=False).agg(
       mean=('変化量', 'mean'),
       std=('変化量', 'std'),
       count=('変化量', 'count'),
