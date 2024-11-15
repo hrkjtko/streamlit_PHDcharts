@@ -470,8 +470,10 @@ def graham(df, parameter, border=False):
     df_pre_min = df_pre[df_pre['治療前月齢'] == age]
     #df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
 
-    min = df_pre_min['月齢'].min()
-    max = df_temp['月齢'].max()
+    #min = df_pre_min['月齢'].min()
+    min = 20
+    #max = df_temp['月齢'].max()
+    max = 0
 
     x_rage_mins[age] = 20
     x_rage_maxes[age] = 0
