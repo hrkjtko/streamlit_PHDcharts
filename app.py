@@ -407,6 +407,9 @@ def graham(df, parameter, border=False):
 
   df_fig = df.copy()
 
+  df_fig['治療前月齢'] = df_fig['治療前月齢'].mask(df_fig['治療前月齢'] <3, '-3')
+  df_fig['治療前月齢'] = df_fig['治療前月齢'].mask(df_fig['治療前月齢'] >=8, '8-')
+
   df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
   df_fig = df_fig.sort_values('月齢')  #不要？
   df_fig = df_fig.drop_duplicates('ダミーID', keep='last')
