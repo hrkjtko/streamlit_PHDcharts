@@ -407,8 +407,22 @@ def graham(df, parameter, border=False):
 
   df_fig = df.copy()
 
-  df_fig['治療前月齢'] = df_fig['治療前月齢'].mask(df_fig['治療前月齢'] <3, '-3')
-  df_fig['治療前月齢'] = df_fig['治療前月齢'].mask(df_fig['治療前月齢'] >=8, '8-')
+  df_age = pd.DataFrame()
+  
+  df_young = df_fig[df_fig['治療前月齢'] < 3]
+  df_young['治療前月齢'] = '-3'
+
+  df_age = pd.concat([df_temp, df_young])
+
+  for i in range(4, 8):
+    df_temp = df_fig[(df_fig['治療前月齢'] >= i) & (df_fig['治療前月齢'] < i+1)]
+    df_temp['治療前月齢'] = str(i)
+    df_age = pd.concat([df_age, df_temp])
+
+  df_old = df_fig[df_fig['治療前月齢'] >= 8]
+  df_old['治療前月齢'] = '8-'
+  
+  df_age = pd.concat([df_age, df_old])
 
   df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
   df_fig = df_fig.sort_values('月齢')  #不要？
@@ -432,13 +446,10 @@ def graham(df, parameter, border=False):
   dashes = ['solid', 'dashdot', 'dash', 'dot'] #'longdash', 'longdashdot'
 
   import math
-  ages = list(df_fig['治療前月齢'].unique())
-  ages = list(set(math.floor(num) for num in ages))
-  ages.sort()  # 元の順序に近づけるためにソート
-  #ages = sorted(ages)
+  ages = ['-3', '4', '5', '6', '7', '8-']
 
   #print('治療前月齢のリスト', ages)
-  st.write('治療前月齢のリスト:', ages)
+  #st.write('治療前月齢のリスト:', ages)
 
   max_sd0, max_sd1 = 0, 0
 
@@ -448,10 +459,10 @@ def graham(df, parameter, border=False):
     if i > 6:  # 最大6列まで
       break
       
-    #df_temp = df_fig[df_fig['治療前月齢'] == age]
-    df_temp = df_fig[(df_fig['治療前月齢'] >= age) & (df_fig['治療前月齢'] < age+1)]
-    #df_pre_min = df_pre[df_pre['治療前月齢'] == age]
-    df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
+    df_temp = df_fig[df_fig['治療前月齢'] == age]
+    #df_temp = df_fig[(df_fig['治療前月齢'] >= age) & (df_fig['治療前月齢'] < age+1)]
+    df_pre_min = df_pre[df_pre['治療前月齢'] == age]
+    #df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
 
     min = df_pre_min['月齢'].min()
     max = df_temp['月齢'].max()
