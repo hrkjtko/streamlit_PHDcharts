@@ -409,7 +409,7 @@ def graham(df, parameter, border=False):
 
   df_age = pd.DataFrame()
   
-  df_young = df_fig[df_fig['治療前月齢'] <= 3]
+  df_young = df_fig[df_fig['治療前月齢'] < 4]
   df_young['治療前月齢'] = '-3'
 
   df_age = pd.concat([df_age, df_young])
