@@ -196,7 +196,15 @@ def hist(parameter='短頭率', df_first=df_first):
 
   for i in range(len(limits)):
     #fig.add_trace(go.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
-    fig.add_trace(go.scatter.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
+    #fig.add_trace(go.scatter.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
+    fig.add_trace(go.Scatter(
+        x=[limits[i], limits[i]],  # x座標
+        y=y,                       # y座標
+        mode='lines',              # 線を描画
+        marker_color='pink',
+        line=dict(dash='dot'),
+        name=str(limits[i])
+    ))
 
   if all_number >= 1000:
     all_number = str(all_number)
