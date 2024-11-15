@@ -813,8 +813,6 @@ for parameter in parameters:
   #st.table(result)
   st.dataframe(result, width=800)
 
-for parameter in parameters:
-
 #df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
 #st.table(df_vis)
