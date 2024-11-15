@@ -624,7 +624,7 @@ def graham(df, parameter, border=False):
                     #xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
                     xaxis5=dict(title='age', range=[2-premargin, x_rage_maxes[4]]),
                     #xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
-                    xaxis5=dict(title='age', range=[2-premargin, x_rage_maxes[5]]),
+                    xaxis6=dict(title='age', range=[2-premargin, x_rage_maxes[5]]),
                     yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
                     yaxis2=dict(range=[min, max]),
                     yaxis3=dict(range=[min, max]),
