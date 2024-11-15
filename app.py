@@ -539,7 +539,8 @@ def graham(df, parameter, border=False):
                     #ids=[level, level],
                     #name=age + level
                     name = level,
-                    legendgroup=age)
+                    #legendgroup=age)
+                    legendgroup=level)
       else:
         d = go.Scatter(x=x, y=y,
                     error_x=dict(type='data', array=x_sd, visible=True),
