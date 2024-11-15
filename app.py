@@ -848,19 +848,20 @@ def make_table(parameter, df, co = False):
 
   return (result)
 
+##関数パート終了
+
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
 for parameter in parameters:
   hist(parameter)
 
-for parameter in parameters:
-  graham(df_tx_pre_post, parameter)
-
 show_helmet_proportion()
-
 
 table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'].unique()
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
+
+for parameter in parameters:
+  graham(df_table, parameter)
 
 for parameter in parameters:
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
