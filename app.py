@@ -78,6 +78,7 @@ def add_pre_levels(df):
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']>126, '長頭')
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<=126, '正常')
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<106, '軽症')
+  df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<103, '中等症')
   df['治療前短頭症'] = df['治療前短頭症'].mask(df['短頭率']<100, '重症')
 
   return(df)
@@ -409,7 +410,7 @@ def graham(df, parameter, border=False):
   df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
   df_fig = df_fig.drop_duplicates('ダミーID', keep='last')
 
-  severities = {'後頭部対称率':'治療前PSRレベル', '前頭部対称率':'治療前ASRレベル', 'CA':'治療前CA（斜頭）', 'CVAI':'治療前CVAI（斜頭）', '短頭率':'治療前短頭症', 'CI':'治療前短頭症'}
+  severities = {'後頭部対称率':'治療前PSRレベル', '前頭部対称率':'治療前ASRレベル', 'CA':'治療前CA重症度', 'CVAI':'治療前CVAI重症度', '短頭率':'治療前短頭症', 'CI':'治療前短頭症'}
   severities = severities[parameter]
 
   parameter_names = {'後頭部対称率':'PSR', '前頭部対称率':'ASR', 'CA':'CA', 'CVAI':'CVAI', '短頭率':'BI', 'CI':'CI'}
@@ -512,7 +513,7 @@ def graham(df, parameter, border=False):
                     mode='markers+lines',
                     #line=dict(color = line_color),
                     line=dict(color = line_color, dash = dash),
-                    showlegend=False,
+                    showlegend=False,  #ここが違う
                     #ids=[level, level],
                     #name=age + level
                     name = level,
@@ -569,12 +570,15 @@ def graham(df, parameter, border=False):
   elif parameter == 'CA':
     min, max = 0, 25
 
-  elif parameter == '後頭部対称率':
+  elif parameter == '前頭部対称率':
     min, max = 70, 100
+  
+  elif parameter == '後頭部対称率':
+    min, max = 60, 100
 
   elif parameter == '短頭率':
     min, max = 94, 114
-  else:
+  else:  #CI？
     min, max = 89, 109
 
   premargin = 0.5
