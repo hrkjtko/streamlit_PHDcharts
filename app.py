@@ -431,7 +431,7 @@ def graham(df, parameter, border=False):
     #df_temp = df_fig[df_fig['治療前月齢'] == age]
     df_temp = df_fig[(df_fig['治療前月齢'] >= age) & (df_fig['治療前月齢'] < age+1)]
     #df_pre_min = df_pre[df_pre['治療前月齢'] == age]
-    df_pre_min = (df_pre[df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
+    df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
 
     min = df_pre_min['月齢'].min()
     max = df_temp['月齢'].max()
