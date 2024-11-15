@@ -799,7 +799,7 @@ for parameter in parameters:
   hist(parameter)
 
 for parameter in parameters:
-  graham(df_tx_pre_post)
+  graham(df_tx_pre_post, parameter)
 
 show_helmet_proportion()
 
