@@ -195,7 +195,8 @@ def hist(parameter='短頭率', df_first=df_first):
     limits=list({80, 94, 101} & set(x))
 
   for i in range(len(limits)):
-    fig.add_trace(go.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
+    #fig.add_trace(go.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
+    fig.add_trace(go.scatter.Line(x=[limits[i],limits[i]], y=y, mode='lines', marker_color='pink', line=dict(dash='dot'), name=str(limits[i])))
 
   if all_number >= 1000:
     all_number = str(all_number)
@@ -509,6 +510,7 @@ def graham(df, parameter, border=False):
                     name = level,
                     legendgroup=age)
 
+      print(fig.print_grid())  #グリッド構造を確認
       fig.append_trace(d, 1, i)
 
     if border:
