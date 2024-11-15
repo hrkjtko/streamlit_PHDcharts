@@ -977,6 +977,7 @@ if submit_button:
       for parameter in parameters:
         count = len(filtered_df_tx_pre_post['ダミーID'].unique())
         st.write(parameter+'の治療前後の変化　', str(count), '人')
+        graham(filtered_df_tx_pre_post, parameter)
         result = make_table(parameter, filtered_df_tx_pre_post)
         st.dataframe(result, width=800)
 
@@ -984,6 +985,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
+          graham(filtered_df_helmet, parameter)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -991,6 +993,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
+          graham(filtered_df_helmet, parameter)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -998,6 +1001,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
+          graham(filtered_df_helmet, parameter)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -1008,6 +1012,8 @@ if submit_button:
       #st.dataframe(filtered_df_co, width=800)
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
+
+        graham(filtered_df_co, parameter)
         result = make_table(parameter, filtered_df_co, co = True)
         #st.table(result)
         st.dataframe(result, width=800)
