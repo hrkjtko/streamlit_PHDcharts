@@ -434,7 +434,7 @@ def graham(df, parameter, border=False):
   ages.sort()  # 元の順序に近づけるためにソート
   #ages = sorted(ages)
 
-  print(ages)
+  print('治療前月齢のリスト', ages)
 
   max_sd0, max_sd1 = 0, 0
 
