@@ -496,7 +496,7 @@ def graham(df, parameter, border=False):
       if max_sd0 < sd0:
         max_sd0 = sd0
 
-      if min < mean0 - sd0:
+      if min > mean0 - sd0:
         min = mean0 - sd0*1.1
 
       sd = df_temp_temp['月齢'].std()
