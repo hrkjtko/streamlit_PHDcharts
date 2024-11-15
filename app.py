@@ -503,7 +503,7 @@ def graham(df, parameter, border=False):
 
       #月齢の幅
       range_age = max - min
-      if range_max < range:
+      if range_max < range_age:
         range_max = range_age
 
       #y.append(df_pre_temp['治療前'+parameter].mean())
