@@ -539,8 +539,8 @@ def graham(df, parameter, border=False):
                     #ids=[level, level],
                     #name=age + level
                     name = level,
-                    #legendgroup=age)
-                    legendgroup=level)
+                    legendgroup=age)
+                    #legendgroup=level)
       else:
         d = go.Scatter(x=x, y=y,
                     error_x=dict(type='data', array=x_sd, visible=True),
@@ -551,11 +551,12 @@ def graham(df, parameter, border=False):
                     showlegend=False,  #ここが違う
                     #ids=[level, level],
                     #name=age + level
-                    name = level,
-                    legendgroup=age)
+                    #name = level,
+                    #legendgroup=age
+                    )
 
       #print(fig.print_grid())  #グリッド構造を確認
-      fig.append_trace(d, 1, i)
+      #fig.append_trace(d, 1, i)
       fig.add_trace(d, row=1, col=i)
 
     if border:
