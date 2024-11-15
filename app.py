@@ -424,6 +424,8 @@ def graham(df, parameter, border=False):
   
   df_age = pd.concat([df_age, df_old])
 
+  df_fig = df_age.copy()
+
   df_pre = df_fig[df_fig['治療ステータス'] == '治療前']
   df_fig = df_fig.sort_values('月齢')  #不要？
   df_fig = df_fig.drop_duplicates('ダミーID', keep='last')
