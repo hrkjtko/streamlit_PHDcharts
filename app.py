@@ -469,7 +469,7 @@ def graham(df, parameter, border=False):
     #df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
 
     min = df_pre_min['月齢'].min()
-    max = df_temp['月齢'].max()
+    #max = df_temp['月齢'].max()
 
     #for level, line_color in zip(levels, line_colors):
     for level, line_color, dash in zip(levels, line_colors, dashes):
@@ -500,9 +500,11 @@ def graham(df, parameter, border=False):
       if max_sd1 < sd:
         max_sd1 = sd
 
-      if max < mean1 + sd:
-        #max = mean1 + sd*1.1 + sd0*1.1
-        max = mean1 + sd*1.1
+      max = mean1 + sd*1.1
+
+      # if max < mean1 + sd:
+      #   #max = mean1 + sd*1.1 + sd0*1.1
+      #   max = mean1 + sd*1.1
 
       x_rage_maxes.append(max)
 
@@ -616,15 +618,15 @@ def graham(df, parameter, border=False):
                     #xaxis=dict(title='age', range=[2-premargin, 1.5+range_max]), 
                     xaxis=dict(title='age', range=[2-premargin, x_rage_maxes[0]]),
                     #xaxis2=dict(title='age', range=[4-premargin, 3.5+range_max]),
-                    xaxis2=dict(title='age', range=[2-premargin, x_rage_maxes[1]]),
+                    xaxis2=dict(title='age', range=[4-premargin, x_rage_maxes[1]]),
                     #xaxis3=dict(title='age', range=[5-premargin, 4.5+range_max]),
-                    xaxis3=dict(title='age', range=[2-premargin, x_rage_maxes[2]]),
+                    xaxis3=dict(title='age', range=[5-premargin, x_rage_maxes[2]]),
                     #xaxis4=dict(title='age', range=[6-premargin, 5.5+range_max]),
-                    xaxis4=dict(title='age', range=[2-premargin, x_rage_maxes[3]]),
+                    xaxis4=dict(title='age', range=[6-premargin, x_rage_maxes[3]]),
                     #xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
-                    xaxis5=dict(title='age', range=[2-premargin, x_rage_maxes[4]]),
+                    xaxis5=dict(title='age', range=[7-premargin, x_rage_maxes[4]]),
                     #xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
-                    xaxis6=dict(title='age', range=[2-premargin, x_rage_maxes[5]]),
+                    xaxis6=dict(title='age', range=[8-premargin, x_rage_maxes[5]]),
                     yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
                     yaxis2=dict(range=[min, max]),
                     yaxis3=dict(range=[min, max]),
