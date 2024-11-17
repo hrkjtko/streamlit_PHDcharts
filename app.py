@@ -895,7 +895,7 @@ yesterday = datetime.now() - timedelta(days=1)
 # YYYY年MM月DD日形式でフォーマット
 formatted_date = yesterday.strftime("%Y年%m月%d日")
 
-st.markdown('<div style="text-align: center; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="text-align: center; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
 #st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
 
 st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
