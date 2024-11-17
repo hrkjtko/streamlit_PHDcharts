@@ -898,16 +898,22 @@ st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下
 #st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
 
 st.write('')
-st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
+st.write('')
+st.write('')
+st.write('')
+st.markdown("---")
+st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
 for parameter in parameters:
   hist(parameter)
 
+st.markdown("---")
 show_helmet_proportion()
+st.markdown("---")
 
-st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
 st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
 
 table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'].unique()
@@ -916,6 +922,7 @@ df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
 for parameter in parameters:
   st.write('')
   st.write('')
+  st.markdown("---")
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
   graham(df_table, parameter)
   
@@ -1011,6 +1018,7 @@ if submit_button:
       animate(parameter, filtered_df0, filtered_df)
 
     if (min_age != 1) | (max_age != 13):
+      st.markdown("---")
       st.write('対象を制限した場合のヒストグラムを表示します')
       for parameter in parameters:
         hist(parameter, filtered_df_first)
@@ -1023,6 +1031,7 @@ if submit_button:
         count = len(filtered_df_tx_pre_post['ダミーID'].unique())
         st.write('')
         st.write('')
+        st.markdown("---")
         st.write(parameter+'の治療前後の変化　', str(count), '人')
         graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
         result = make_table(parameter, filtered_df_tx_pre_post)
@@ -1033,6 +1042,7 @@ if submit_button:
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
+          st.markdown("---")
           st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
@@ -1043,6 +1053,7 @@ if submit_button:
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
+          st.markdown("---")
           st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
@@ -1053,6 +1064,7 @@ if submit_button:
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
+          st.markdown("---")
           st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
@@ -1064,6 +1076,9 @@ if submit_button:
       st.write(str(count), '人')
       #st.dataframe(filtered_df_co, width=800)
       for parameter in parameters:
+        st.write('')
+        st.write('')
+        st.markdown("---")
         line_plot(parameter, filtered_df_co)
 
         graham(filtered_df_co, parameter)
