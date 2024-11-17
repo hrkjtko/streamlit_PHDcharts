@@ -884,7 +884,26 @@ def make_table(parameter, df, co = False):
 
 ##関数パート終了
 
+# タイトルの中央揃え
+st.markdown('<div style="text-align: center; color:black; font-size:24px; font-weight: bold;">位置的頭蓋変形の診療に関するデータビジュアライゼーション</div>', unsafe_allow_html=True)
+
+from datetime import datetime, timedelta
+
+# 昨日の日付を取得
+yesterday = datetime.now() - timedelta(days=1)
+
+# YYYY年MM月DD日形式でフォーマット
+formatted_date = yesterday.strftime("%Y年%m月%d日")
+formatted_date
+
+st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
+
+st.markdown('<div style="text-align: left; color:black; font-size:18px;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
+
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
+
+st.markdown('<div style="text-align: left; color:black; font-size:18px;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
+st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
 
 for parameter in parameters:
   hist(parameter)
@@ -1037,7 +1056,7 @@ if submit_button:
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
 
-        graham(filtered_df_co, parameter, x_limit=max_value)
+        graham(filtered_df_co, parameter)
         result = make_table(parameter, filtered_df_co, co = True)
         #st.table(result)
         st.dataframe(result, width=800)
