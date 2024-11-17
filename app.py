@@ -899,8 +899,6 @@ st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下
 
 st.write('')
 st.write('')
-st.write('')
-st.write('')
 st.markdown("---")
 st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
 
@@ -908,8 +906,8 @@ parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CV
 
 for parameter in parameters:
   hist(parameter)
+  st.markdown("---")
 
-st.markdown("---")
 show_helmet_proportion()
 st.markdown("---")
 
@@ -922,13 +920,13 @@ df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
 for parameter in parameters:
   st.write('')
   st.write('')
-  st.markdown("---")
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
   graham(df_table, parameter)
   
   result = make_table(parameter, df_table)
   #st.table(result)
   st.dataframe(result, width=800)
+  st.markdown("---")
 
 #df_vis = takamatsu(df_tx)
 #st.dataframe(df_vis)
@@ -1022,6 +1020,7 @@ if submit_button:
       st.write('対象を制限した場合のヒストグラムを表示します')
       for parameter in parameters:
         hist(parameter, filtered_df_first)
+        st.markdown("---")
 
     filtered_treated_patients = filtered_df_tx_pre_post[filtered_df_tx_pre_post['治療ステータス'] == '治療後']['ダミーID'].unique()
     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ダミーID'].isin(filtered_treated_patients)]
@@ -1031,44 +1030,44 @@ if submit_button:
         count = len(filtered_df_tx_pre_post['ダミーID'].unique())
         st.write('')
         st.write('')
-        st.markdown("---")
         st.write(parameter+'の治療前後の変化　', str(count), '人')
         graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
         result = make_table(parameter, filtered_df_tx_pre_post)
         st.dataframe(result, width=800)
+        st.markdown("---")
 
         if filter_pass0:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
-          st.markdown("---")
           st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
+          st.markdown("---")
 
         if filter_pass1:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
-          st.markdown("---")
           st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
+          st.markdown("---")
 
         if filter_pass2:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write('')
           st.write('')
-          st.markdown("---")
           st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
+          st.markdown("---")
 
     if filter_pass3:
       st.write('経過観察した場合のグラフを表示します')
@@ -1078,13 +1077,13 @@ if submit_button:
       for parameter in parameters:
         st.write('')
         st.write('')
-        st.markdown("---")
         line_plot(parameter, filtered_df_co)
 
         graham(filtered_df_co, parameter)
         result = make_table(parameter, filtered_df_co, co = True)
         #st.table(result)
         st.dataframe(result, width=800)
+        st.markdown("---")
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
