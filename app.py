@@ -397,7 +397,7 @@ def takamatsu(df, brachy=False):
   df_vis['After Helmet'] = df_vis['After Helmet'].mask(df_vis['After Helmet']%1==0, df_vis['After Helmet'].astype(int).astype(str))
   return(df_vis)
 
-def graham(df, parameter, border=False, , x_limit=False):
+def graham(df, parameter, border=False, x_limit=False):
   fig = make_subplots(
       rows=1, cols=6,
       # 初めに各グラフのタイトルを設定
