@@ -884,8 +884,7 @@ def make_table(parameter, df, co = False):
 
 ##関数パート終了
 
-# タイトルの中央揃え
-st.markdown('<div style="text-align: center; color:black; font-size:24px; font-weight: bold;">位置的頭蓋変形の診療に関するデータビジュアライゼーション</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: left; color:black; font-size:36px; font-weight: bold;">位置的頭蓋変形の診療に関するデータビジュアライゼーション</div>', unsafe_allow_html=True)
 
 from datetime import datetime, timedelta
 
@@ -895,9 +894,10 @@ yesterday = datetime.now() - timedelta(days=1)
 # YYYY年MM月DD日形式でフォーマット
 formatted_date = yesterday.strftime("%Y年%m月%d日")
 
-st.markdown(f'<div style="text-align: center; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
 #st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
 
+st.write('')
 st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
@@ -914,6 +914,8 @@ table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
 
 for parameter in parameters:
+  st.write('')
+  st.write('')
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
   graham(df_table, parameter)
   
@@ -1019,6 +1021,8 @@ if submit_button:
     if filter_pass0 | filter_pass1 | filter_pass2:
       for parameter in parameters:
         count = len(filtered_df_tx_pre_post['ダミーID'].unique())
+        st.write('')
+        st.write('')
         st.write(parameter+'の治療前後の変化　', str(count), '人')
         graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
         result = make_table(parameter, filtered_df_tx_pre_post)
@@ -1027,6 +1031,8 @@ if submit_button:
         if filter_pass0:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
           count = len(filtered_df_helmet['ダミーID'].unique())
+          st.write('')
+          st.write('')
           st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
@@ -1035,6 +1041,8 @@ if submit_button:
         if filter_pass1:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
           count = len(filtered_df_helmet['ダミーID'].unique())
+          st.write('')
+          st.write('')
           st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
@@ -1043,6 +1051,8 @@ if submit_button:
         if filter_pass2:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
           count = len(filtered_df_helmet['ダミーID'].unique())
+          st.write('')
+          st.write('')
           st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
           graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
