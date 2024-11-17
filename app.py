@@ -894,21 +894,21 @@ yesterday = datetime.now() - timedelta(days=1)
 
 # YYYY年MM月DD日形式でフォーマット
 formatted_date = yesterday.strftime("%Y年%m月%d日")
-formatted_date
 
-st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
+st.markdown('<div style="text-align: center; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
+#st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
 
-st.markdown('<div style="text-align: left; color:black; font-size:18px;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
-
-st.markdown('<div style="text-align: left; color:black; font-size:18px;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
-st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
 
 for parameter in parameters:
   hist(parameter)
 
 show_helmet_proportion()
+
+st.markdown('<div style="text-align: left; color:black; font-size:18px; font-weight: bold;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
+st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
 
 table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'].unique()
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
