@@ -397,7 +397,7 @@ def takamatsu(df, brachy=False):
   df_vis['After Helmet'] = df_vis['After Helmet'].mask(df_vis['After Helmet']%1==0, df_vis['After Helmet'].astype(int).astype(str))
   return(df_vis)
 
-def graham(df, parameter, border=False):
+def graham(df, parameter, border=False, , x_limit=False):
   fig = make_subplots(
       rows=1, cols=6,
       # 初めに各グラフのタイトルを設定
@@ -630,27 +630,50 @@ def graham(df, parameter, border=False):
     if range_max < range_age:
       range_max = range_age
 
-  layout = go.Layout(width=1600, height=900,
-                    title='Change in '+parameter_name+' on Age & Severity Groups',
-                    #paper_bgcolor='white',
-                    #xaxis=dict(title='age', range=[2-premargin, 1.5+range_max]), 
-                    xaxis=dict(title='age', range=[x_rage_mins['-3'], x_rage_mins['-3'] + range_max]),
-                    #xaxis2=dict(title='age', range=[4-premargin, 3.5+range_max]),
-                    xaxis2=dict(title='age', range=[x_rage_mins['4'], x_rage_mins['4'] + range_max]),
-                    #xaxis3=dict(title='age', range=[5-premargin, 4.5+range_max]),
-                    xaxis3=dict(title='age', range=[x_rage_mins['5'], x_rage_mins['5'] + range_max]),
-                    #xaxis4=dict(title='age', range=[6-premargin, 5.5+range_max]),
-                    xaxis4=dict(title='age', range=[x_rage_mins['6'], x_rage_mins['6'] + range_max]),
-                    #xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
-                    xaxis5=dict(title='age', range=[x_rage_mins['7'], x_rage_mins['7'] + range_max]),
-                    #xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
-                    xaxis6=dict(title='age', range=[x_rage_mins['8-'], x_rage_mins['8-'] + range_max]),
-                    yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
-                    yaxis2=dict(range=[min, max]),
-                    yaxis3=dict(range=[min, max]),
-                    yaxis4=dict(range=[min, max]),
-                    yaxis5=dict(range=[min, max]),
-                    yaxis6=dict(range=[min, max]))
+  if x_limit:
+    layout = go.Layout(width=1600, height=900,
+                      title='Change in '+parameter_name+' on Age & Severity Groups',
+                      #paper_bgcolor='white',
+                      #xaxis=dict(title='age', range=[2-premargin, 1.5+range_max]), 
+                      xaxis=dict(title='age', range=[3, 3 + x_limit+1]),
+                      #xaxis2=dict(title='age', range=[4-premargin, 3.5+range_max]),
+                      xaxis2=dict(title='age', range=[4, 4 + x_limit+1),
+                      #xaxis3=dict(title='age', range=[5-premargin, 4.5+range_max]),
+                      xaxis3=dict(title='age', range=[5, 5 + x_limit+1),
+                      #xaxis4=dict(title='age', range=[6-premargin, 5.5+range_max]),
+                      xaxis4=dict(title='age', range=[6, 6 + x_limit+1),
+                      #xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
+                      xaxis5=dict(title='age', range=[7, 7 + x_limit+1),
+                      #xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
+                      xaxis6=dict(title='age', range=[8, 8 + x_limit+1),
+                      yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
+                      yaxis2=dict(range=[min, max]),
+                      yaxis3=dict(range=[min, max]),
+                      yaxis4=dict(range=[min, max]),
+                      yaxis5=dict(range=[min, max]),
+                      yaxis6=dict(range=[min, max]))
+  else:
+    layout = go.Layout(width=1600, height=900,
+                      title='Change in '+parameter_name+' on Age & Severity Groups',
+                      #paper_bgcolor='white',
+                      #xaxis=dict(title='age', range=[2-premargin, 1.5+range_max]), 
+                      xaxis=dict(title='age', range=[x_rage_mins['-3'], x_rage_mins['-3'] + range_max]),
+                      #xaxis2=dict(title='age', range=[4-premargin, 3.5+range_max]),
+                      xaxis2=dict(title='age', range=[x_rage_mins['4'], x_rage_mins['4'] + range_max]),
+                      #xaxis3=dict(title='age', range=[5-premargin, 4.5+range_max]),
+                      xaxis3=dict(title='age', range=[x_rage_mins['5'], x_rage_mins['5'] + range_max]),
+                      #xaxis4=dict(title='age', range=[6-premargin, 5.5+range_max]),
+                      xaxis4=dict(title='age', range=[x_rage_mins['6'], x_rage_mins['6'] + range_max]),
+                      #xaxis5=dict(title='age', range=[7-premargin, 6.5+range_max]),
+                      xaxis5=dict(title='age', range=[x_rage_mins['7'], x_rage_mins['7'] + range_max]),
+                      #xaxis6=dict(title='age', range=[8-premargin, 7.5+range_max]),
+                      xaxis6=dict(title='age', range=[x_rage_mins['8-'], x_rage_mins['8-'] + range_max]),
+                      yaxis=dict(title='Mean '+parameter_name, range=[min, max]),
+                      yaxis2=dict(range=[min, max]),
+                      yaxis3=dict(range=[min, max]),
+                      yaxis4=dict(range=[min, max]),
+                      yaxis5=dict(range=[min, max]),
+                      yaxis6=dict(range=[min, max]))
 
   fig['layout'].update(layout)
 
@@ -977,7 +1000,7 @@ if submit_button:
       for parameter in parameters:
         count = len(filtered_df_tx_pre_post['ダミーID'].unique())
         st.write(parameter+'の治療前後の変化　', str(count), '人')
-        graham(filtered_df_tx_pre_post, parameter)
+        graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
         result = make_table(parameter, filtered_df_tx_pre_post)
         st.dataframe(result, width=800)
 
@@ -985,7 +1008,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
-          graham(filtered_df_helmet, parameter)
+          graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -993,7 +1016,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
-          graham(filtered_df_helmet, parameter)
+          graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -1001,7 +1024,7 @@ if submit_button:
           filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
           count = len(filtered_df_helmet['ダミーID'].unique())
           st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
-          graham(filtered_df_helmet, parameter)
+          graham(filtered_df_helmet, parameter, x_limit=max_value)
           result = make_table(parameter, filtered_df_helmet)
           st.dataframe(result, width=800)
 
@@ -1013,7 +1036,7 @@ if submit_button:
       for parameter in parameters:
         line_plot(parameter, filtered_df_co)
 
-        graham(filtered_df_co, parameter)
+        graham(filtered_df_co, parameter, x_limit=max_value)
         result = make_table(parameter, filtered_df_co, co = True)
         #st.table(result)
         st.dataframe(result, width=800)
