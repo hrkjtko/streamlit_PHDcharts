@@ -989,9 +989,10 @@ if submit_button:
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
 
-    st.write('対象を制限した場合のヒストグラムを表示します')
-    for parameter in parameters:
-      hist(parameter, filtered_df_first)
+    if (min_age != 1) | (max_age != 13):
+      st.write('対象を制限した場合のヒストグラムを表示します')
+      for parameter in parameters:
+        hist(parameter, filtered_df_first)
 
     filtered_treated_patients = filtered_df_tx_pre_post[filtered_df_tx_pre_post['治療ステータス'] == '治療後']['ダミーID'].unique()
     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ダミーID'].isin(filtered_treated_patients)]
