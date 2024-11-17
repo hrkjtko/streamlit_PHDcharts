@@ -1012,8 +1012,10 @@ if submit_button:
 
     st.write('▶を押すと治療前後の変化が見られます。')
     animate_BI_PSR(filtered_df0, filtered_df)
+    st.markdown("---")
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
+      st.markdown("---")
 
     if (min_age != 1) | (max_age != 13):
       st.markdown("---")
