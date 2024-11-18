@@ -1016,7 +1016,7 @@ if submit_button:
       animate(parameter, filtered_df0, filtered_df)
       st.markdown("---")
 
-    if (min_age != 1) | (max_age != 13):
+    if (min_age != 1) | (max_age != 12):
       st.markdown("---")
       st.write('対象を制限した場合のヒストグラムを表示します')
       for parameter in parameters:
@@ -1071,20 +1071,20 @@ if submit_button:
     #       st.markdown("---")
 
     #if filter_pass3:
-    st.write('経過観察した場合のグラフを表示します')
-    count = len(filtered_df_co['ダミーID'].unique())
-    st.write(str(count), '人')
-    #st.dataframe(filtered_df_co, width=800)
-    for parameter in parameters:
-      st.write('')
-      st.write('')
-      line_plot(parameter, filtered_df_co)
+    # st.write('経過観察した場合のグラフを表示します')
+    # count = len(filtered_df_co['ダミーID'].unique())
+    # st.write(str(count), '人')
+    # #st.dataframe(filtered_df_co, width=800)
+    # for parameter in parameters:
+    #   st.write('')
+    #   st.write('')
+    #   line_plot(parameter, filtered_df_co)
 
-      graham(filtered_df_co, parameter)
-      result = make_table(parameter, filtered_df_co, co = True)
-      #st.table(result)
-      st.dataframe(result, width=800)
-      st.markdown("---")
+    #   graham(filtered_df_co, parameter)
+    #   result = make_table(parameter, filtered_df_co, co = True)
+    #   #st.table(result)
+    #   st.dataframe(result, width=800)
+    #   st.markdown("---")
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
