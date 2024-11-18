@@ -162,7 +162,7 @@ def hist(parameter='短頭率', df_first=df_first):
   max_para = int(df_first[parameter].max())
 
   for i in list(range(min, max_para)):
-    tx_n = df_first_tx[df_first_tx[parameter] == i][parameter].count()
+    tx_n = df_first[df_first[parameter] == i][parameter].count()
     all_n = df_first[df_first[parameter] == i][parameter].count()
     untx_n = all_n-tx_n
     if all_n > 0:
