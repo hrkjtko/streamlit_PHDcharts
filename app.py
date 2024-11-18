@@ -180,8 +180,9 @@ def hist(parameter='短頭率', df_first=df_first):
 
   y=[0, max(all)]
 
-  fig = go.Figure(go.Bar(x=x, y=treated, name='治療あり', marker_color='blue')) #opacity=0.8
-  fig.add_trace(go.Bar(x=x, y=untreated, name='治療なし',  marker_color='cyan', text=tx_rates)) #opacity=0.4
+  #fig = go.Figure(go.Bar(x=x, y=treated, name='治療あり', marker_color='blue')) #opacity=0.8
+  fig = go.Figure(go.Bar(x=x, y=treated, marker_color='blue')) #opacity=0.8
+  # fig.add_trace(go.Bar(x=x, y=untreated, name='治療なし',  marker_color='cyan', text=tx_rates)) #opacity=0.4
   fig.update_traces(textfont_size=12, textfont_color='black',
                     #textangle=0,
                     textposition="outside", cliponaxis=False)
@@ -218,7 +219,8 @@ def hist(parameter='短頭率', df_first=df_first):
 
   fig.update_layout(width=1600, height=900,
       plot_bgcolor='white',
-      title_text=parameter+'の分布（全'+all_number+'人で'+str(tx_rate)+'％が治療）',
+      #title_text=parameter+'の分布（全'+all_number+'人で'+str(tx_rate)+'％が治療）',
+      title_text=parameter+'の分布（全'+all_number+'人）',
       xaxis_title_text=parameter,
       yaxis_title_text='人数',
       barmode='stack'
