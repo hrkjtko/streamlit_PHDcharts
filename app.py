@@ -181,7 +181,7 @@ def hist(parameter='短頭率', df_first=df_first):
   y=[0, max(all)]
 
   #fig = go.Figure(go.Bar(x=x, y=treated, name='治療あり', marker_color='blue')) #opacity=0.8
-  fig = go.Figure(go.Bar(x=x, y=treated, marker_color='blue')) #opacity=0.8
+  fig = go.Figure(go.Bar(x=x, y=treated, marker_color='blue', showlegend=False)) #opacity=0.8
   # fig.add_trace(go.Bar(x=x, y=untreated, name='治療なし',  marker_color='cyan', text=tx_rates)) #opacity=0.4
   fig.update_traces(textfont_size=12, textfont_color='black',
                     #textangle=0,
@@ -515,8 +515,11 @@ def graham(df, parameter, border=False, x_limit=False):
          #max = mean1 + sd*1.1 + sd0*1.1
          max = mean1 + sd*1.1
 
-      if x_rage_mins[age] > min:
-        x_rage_mins[age] = min
+      if !min:
+        if x_rage_mins[age] > min:
+          x_rage_mins[age] = min
+      else:
+        x_rage_mins[age] = i+2
       
       if x_rage_maxes[age] < max:
         x_rage_maxes[age] = max
@@ -904,7 +907,7 @@ st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下
 st.write('')
 st.write('')
 st.markdown("---")
-st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">受診患者の重症度の分布および矯正治療を受けた割合</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">受診患者の重症度の分布</div>', unsafe_allow_html=True)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
@@ -1018,8 +1021,7 @@ if submit_button:
       animate(parameter, filtered_df0, filtered_df)
       st.markdown("---")
 
-    if (min_age != 1) | (max_age != 12):
-      st.markdown("---")
+    if ~((min_age == 1) & (max_age == 12)):
       st.write('対象を制限した場合のヒストグラムを表示します')
       for parameter in parameters:
         hist(parameter, filtered_df_first)
