@@ -30,14 +30,14 @@ df[parameters] = df[parameters].apply(pd.to_numeric, errors='coerce')
 df = df.dropna()
 df = df.sort_values('月齢')
 
-df_h = pd.DataFrame(data['ヘルメット'])
-df_h = df_h[(df_h['ダミーID'] != '') & (df_h['ヘルメット'] != '')]
+# df_h = pd.DataFrame(data['ヘルメット'])
+# df_h = df_h[(df_h['ダミーID'] != '') & (df_h['ヘルメット'] != '')]
 
-treated_patients = df_h['ダミーID'].unique()
+# treated_patients = df_h['ダミーID'].unique()
 df_first = df[df['治療ステータス'] == '治療前'].drop_duplicates('ダミーID')
 
-df_tx = df[df['ダミーID'].isin(treated_patients)]
-df_tx_pre_last = df_tx[df_tx['治療ステータス'] == '治療前'].drop_duplicates('ダミーID', keep='last')
+# df_tx = df[df['ダミーID'].isin(treated_patients)]
+df_tx_pre_last = df[df['治療ステータス'] == '治療前'].drop_duplicates('ダミーID', keep='last')
 
 df_tx_pre_last['治療前月齢'] = df_tx_pre_last['月齢']
 
@@ -121,6 +121,8 @@ age_diff_df = df_co.groupby('ダミーID')['月齢'].agg(['max', 'min']).reset_i
 
 # 年齢差を新しいカラムとして追加
 age_diff_df['治療期間'] = age_diff_df['max'] - age_diff_df['min']
+
+df_tx_pre_post['ヘルメット'] = 'クルムフィット'
 
 df_co = pd.merge(df_co, age_diff_df[['ダミーID', '治療期間']], on='ダミーID', how='left')
 
@@ -912,7 +914,7 @@ show_helmet_proportion()
 st.markdown("---")
 
 st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
-st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
+# st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
 
 table_members = df_tx_pre_post[df_tx_pre_post['治療期間'] > 1]['ダミーID'].unique()
 df_table = df_tx_pre_post[df_tx_pre_post['ダミーID'].isin(table_members)]
@@ -952,22 +954,19 @@ with st.form(key='filter_form'):
       value=(max([int(df_tx_pre_post['治療期間'].min()),1]), 12)
   )
 
-  st.write('ヘルメットを選択してください（複数選択可）')
+  # st.write('ヘルメットを選択してください（複数選択可）')
 
-  # チェックボックスを作成
-  filter_pass0 = st.checkbox('アイメット')
-  filter_pass1 = st.checkbox('クルム')
-  filter_pass2 = st.checkbox('クルムフィット')
-  filter_pass3 = st.checkbox('経過観察')
+  # # チェックボックスを作成
+  # filter_pass0 = st.checkbox('アイメット')
+  # filter_pass1 = st.checkbox('クルム')
+  # filter_pass2 = st.checkbox('クルムフィット')
+  # filter_pass3 = st.checkbox('経過観察')
 
   submit_button = st.form_submit_button(label='実行')
 
 # 「実行」ボタンを作成
 #if st.button('実行'):
 if submit_button:
-  if not filter_pass0 and not filter_pass1 and not filter_pass2 and not filter_pass3:
-    st.write('一つ以上のチェックボックスを選択してください')
-  else:
     filtered_df = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療後']
         # スライダーで選択された範囲でデータをフィルタリング
     filtered_df_first = df_first[(df_first['月齢'] >= min_age) & (df_first['月齢'] <= max_age)]
@@ -987,22 +986,22 @@ if submit_button:
     filtered_df0 = df_tx_pre_post[df_tx_pre_post['治療ステータス'] == '治療前']
 
     # チェックボックスの状態に応じてデータをフィルタリング
-    if not filter_pass0:
-        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'アイメット']
-        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'アイメット']
-        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'アイメット']
-    if not filter_pass1:
-        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルム']
-        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルム']
-        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルム']
-    if not filter_pass2:
-        filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
-        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
-        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルムフィット']
-    if not filter_pass3:
-        filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
-        filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
-        filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != '経過観察']
+    # if not filter_pass0:
+    #     filtered_df = filtered_df[filtered_df['ヘルメット'] != 'アイメット']
+    #     filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'アイメット']
+    #     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'アイメット']
+    # if not filter_pass1:
+    #     filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルム']
+    #     filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルム']
+    #     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルム']
+    # if not filter_pass2:
+    #     filtered_df = filtered_df[filtered_df['ヘルメット'] != 'クルムフィット']
+    #     filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != 'クルムフィット']
+    #     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != 'クルムフィット']
+    # if not filter_pass3:
+    #     filtered_df = filtered_df[filtered_df['ヘルメット'] != '経過観察']
+    #     filtered_df0 = filtered_df0[filtered_df0['ヘルメット'] != '経過観察']
+    #     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] != '経過観察']
 
 
     filtered_treated_patients = filtered_df['ダミーID'].unique()
@@ -1027,65 +1026,65 @@ if submit_button:
     filtered_treated_patients = filtered_df_tx_pre_post[filtered_df_tx_pre_post['治療ステータス'] == '治療後']['ダミーID'].unique()
     filtered_df_tx_pre_post = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ダミーID'].isin(filtered_treated_patients)]
     
-    if filter_pass0 | filter_pass1 | filter_pass2:
-      for parameter in parameters:
-        count = len(filtered_df_tx_pre_post['ダミーID'].unique())
-        st.write('')
-        st.write('')
-        st.write(parameter+'の治療前後の変化　', str(count), '人')
-        graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
-        result = make_table(parameter, filtered_df_tx_pre_post)
-        st.dataframe(result, width=800)
-        st.markdown("---")
+    # if filter_pass0 | filter_pass1 | filter_pass2:
+    #   for parameter in parameters:
+    #     count = len(filtered_df_tx_pre_post['ダミーID'].unique())
+    #     st.write('')
+    #     st.write('')
+    #     st.write(parameter+'の治療前後の変化　', str(count), '人')
+    #     graham(filtered_df_tx_pre_post, parameter, x_limit=max_value)
+    #     result = make_table(parameter, filtered_df_tx_pre_post)
+    #     st.dataframe(result, width=800)
+    #     st.markdown("---")
 
-        if filter_pass0:
-          filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
-          count = len(filtered_df_helmet['ダミーID'].unique())
-          st.write('')
-          st.write('')
-          st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
-          graham(filtered_df_helmet, parameter, x_limit=max_value)
-          result = make_table(parameter, filtered_df_helmet)
-          st.dataframe(result, width=800)
-          st.markdown("---")
+    #     if filter_pass0:
+    #       filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'アイメット']
+    #       count = len(filtered_df_helmet['ダミーID'].unique())
+    #       st.write('')
+    #       st.write('')
+    #       st.write(parameter+'の治療前後の変化(アイメット)　', str(count), '人')
+    #       graham(filtered_df_helmet, parameter, x_limit=max_value)
+    #       result = make_table(parameter, filtered_df_helmet)
+    #       st.dataframe(result, width=800)
+    #       st.markdown("---")
 
-        if filter_pass1:
-          filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
-          count = len(filtered_df_helmet['ダミーID'].unique())
-          st.write('')
-          st.write('')
-          st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
-          graham(filtered_df_helmet, parameter, x_limit=max_value)
-          result = make_table(parameter, filtered_df_helmet)
-          st.dataframe(result, width=800)
-          st.markdown("---")
+    #     if filter_pass1:
+    #       filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルム']
+    #       count = len(filtered_df_helmet['ダミーID'].unique())
+    #       st.write('')
+    #       st.write('')
+    #       st.write(parameter+'の治療前後の変化(クルム)　', str(count), '人')
+    #       graham(filtered_df_helmet, parameter, x_limit=max_value)
+    #       result = make_table(parameter, filtered_df_helmet)
+    #       st.dataframe(result, width=800)
+    #       st.markdown("---")
 
-        if filter_pass2:
-          filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
-          count = len(filtered_df_helmet['ダミーID'].unique())
-          st.write('')
-          st.write('')
-          st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
-          graham(filtered_df_helmet, parameter, x_limit=max_value)
-          result = make_table(parameter, filtered_df_helmet)
-          st.dataframe(result, width=800)
-          st.markdown("---")
+    #     if filter_pass2:
+    #       filtered_df_helmet = filtered_df_tx_pre_post[filtered_df_tx_pre_post['ヘルメット'] == 'クルムフィット']
+    #       count = len(filtered_df_helmet['ダミーID'].unique())
+    #       st.write('')
+    #       st.write('')
+    #       st.write(parameter+'の治療前後の変化(クルムフィット)　', str(count), '人')
+    #       graham(filtered_df_helmet, parameter, x_limit=max_value)
+    #       result = make_table(parameter, filtered_df_helmet)
+    #       st.dataframe(result, width=800)
+    #       st.markdown("---")
 
-    if filter_pass3:
-      st.write('経過観察した場合のグラフを表示します')
-      count = len(filtered_df_co['ダミーID'].unique())
-      st.write(str(count), '人')
-      #st.dataframe(filtered_df_co, width=800)
-      for parameter in parameters:
-        st.write('')
-        st.write('')
-        line_plot(parameter, filtered_df_co)
+    #if filter_pass3:
+    st.write('経過観察した場合のグラフを表示します')
+    count = len(filtered_df_co['ダミーID'].unique())
+    st.write(str(count), '人')
+    #st.dataframe(filtered_df_co, width=800)
+    for parameter in parameters:
+      st.write('')
+      st.write('')
+      line_plot(parameter, filtered_df_co)
 
-        graham(filtered_df_co, parameter)
-        result = make_table(parameter, filtered_df_co, co = True)
-        #st.table(result)
-        st.dataframe(result, width=800)
-        st.markdown("---")
+      graham(filtered_df_co, parameter)
+      result = make_table(parameter, filtered_df_co, co = True)
+      #st.table(result)
+      st.dataframe(result, width=800)
+      st.markdown("---")
 
     #df_vis = takamatsu(filtered_df_tx_pre_post)
     #st.dataframe(df_vis)
