@@ -103,7 +103,7 @@ df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID','治療前PSRレ
 
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
-# df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
+#df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
