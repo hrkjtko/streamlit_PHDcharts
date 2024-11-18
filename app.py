@@ -474,12 +474,12 @@ def graham(df, parameter, border=False, x_limit=False):
     df_pre_min = df_pre[df_pre['治療前月齢'] == age]
     #df_pre_min = df_pre[(df_pre['治療前月齢'] >= age) & (df_pre['治療前月齢'] < age+1)]
 
-    #min = df_pre_min['月齢'].min()
-    min = 20
+    min = df_pre_min['月齢'].min()
+    #min = 20
     #max = df_temp['月齢'].max()
     max = 0
 
-    x_rage_mins[age] = 20
+    x_rage_mins[age] = min
     x_rage_maxes[age] = 0
 
     #for level, line_color in zip(levels, line_colors):
@@ -515,11 +515,14 @@ def graham(df, parameter, border=False, x_limit=False):
          #max = mean1 + sd*1.1 + sd0*1.1
          max = mean1 + sd*1.1
 
-      if min != False:
-        if x_rage_mins[age] > min:
-          x_rage_mins[age] = min
-      else:
-        x_rage_mins[age] = i+2
+      # if min != False:
+      #   if x_rage_mins[age] > min:
+      #     x_rage_mins[age] = min
+      # else:
+        # x_rage_mins[age] = i+2
+
+      x_rage_mins[age] < min:
+        x_rage_mins[age] = min
       
       if x_rage_maxes[age] < max:
         x_rage_maxes[age] = max
@@ -907,7 +910,7 @@ st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下
 st.write('')
 st.write('')
 st.markdown("---")
-st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">受診患者の重症度の分布</div>', unsafe_allow_html=True)
+st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">治療患者の重症度の分布</div>', unsafe_allow_html=True)
 
 parameters = ['短頭率', '前頭部対称率', '後頭部対称率', 'CA', 'CVAI', 'CI']
 
