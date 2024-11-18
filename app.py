@@ -515,7 +515,7 @@ def graham(df, parameter, border=False, x_limit=False):
          #max = mean1 + sd*1.1 + sd0*1.1
          max = mean1 + sd*1.1
 
-      if !min:
+      if min != False:
         if x_rage_mins[age] > min:
           x_rage_mins[age] = min
       else:
