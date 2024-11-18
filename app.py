@@ -149,8 +149,8 @@ def hist(parameter='短頭率', df_first=df_first):
   df_first[parameter] = pd.to_numeric(df_first[parameter], errors='coerce')
   df_first[parameter] = df_first[parameter].round()
 
-  df_first_tx = df_first[df_first['ダミーID'].isin(treated_patients)]
-  tx_number = len(df_first_tx['ダミーID'].unique())
+  # df_first_tx = df_first[df_first['ダミーID'].isin(treated_patients)]
+  tx_number = len(df_first['ダミーID'].unique())
   tx_rate = round((tx_number/all_number)*100, 1)
 
   treated = []
@@ -896,7 +896,7 @@ yesterday = datetime.now() - timedelta(days=1)
 # YYYY年MM月DD日形式でフォーマット
 formatted_date = yesterday.strftime("%Y年%m月%d日")
 
-st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下のグラフは2021年03月04日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
+st.markdown(f'<div style="text-align: left; color:black; font-size:18px;">以下のグラフは2024年05月13日から{formatted_date}までのデータにもとづいています</div>', unsafe_allow_html=True)
 #st.write('以下のグラフは2021年03月04日から' + formatted_date + 'までのデータにもとづいています')
 
 st.write('')
