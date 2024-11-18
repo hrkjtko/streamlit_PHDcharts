@@ -521,7 +521,7 @@ def graham(df, parameter, border=False, x_limit=False):
       # else:
         # x_rage_mins[age] = i+2
 
-      x_rage_mins[age] < min:
+      if x_rage_mins[age] > min:
         x_rage_mins[age] = min
       
       if x_rage_maxes[age] < max:
