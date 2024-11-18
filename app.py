@@ -523,6 +523,12 @@ def graham(df, parameter, border=False, x_limit=False):
 
       if x_rage_mins[age] > min:
         x_rage_mins[age] = min
+
+      if x_rage_mins[age]  == min:
+        x_rage_mins[age] = min - 0.1
+      
+
+
       
       if x_rage_maxes[age] < max:
         x_rage_maxes[age] = max
