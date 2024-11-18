@@ -86,7 +86,7 @@ def add_pre_levels(df):
 df_tx_pre_last = add_pre_levels(df_tx_pre_last)
 
 #経過も利用する場合
-df_tx_post =  df_tx[df_tx['治療ステータス'] == '治療後']
+df_tx_post =  df[df['治療ステータス'] == '治療後']
 
 df_tx_pre_age = df_tx_pre_last[['ダミーID', '月齢']]
 df_tx_pre_age = df_tx_pre_age.rename(columns = {'月齢':'治療前月齢'})
