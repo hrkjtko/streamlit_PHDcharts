@@ -103,7 +103,7 @@ df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID','治療前PSRレ
 
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
-df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
+# df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
@@ -910,8 +910,8 @@ for parameter in parameters:
   hist(parameter)
   st.markdown("---")
 
-show_helmet_proportion()
-st.markdown("---")
+# show_helmet_proportion()
+# st.markdown("---")
 
 st.markdown('<div style="text-align: left; color:black; font-size:24px; font-weight: bold;">月齢・重症度別の治療前後の変化</div>', unsafe_allow_html=True)
 # st.write('以下のグラフと表は全てのヘルメットを合わせたものです')
