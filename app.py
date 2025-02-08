@@ -848,7 +848,7 @@ def animate_hc(df0, df):
     # fig.add_trace(go.Scatter(x=[df['月齢'].min(), df['月齢'].max()], y=borders[parameter], mode='lines', line=dict(color='gray', dash = 'dot'), name=parameter+'の正常との境界'), row=1, col=i+1)
 
     #成長曲線
-    fig_px = px.line(ddf_gcf, x='月齢', y='頭囲', color='sex', line_group='name')
+    fig_px = px.line(df_gc, x='月齢', y='頭囲', color='sex', line_group='name')
     for trace in fig_px.data:
       fig.add_trace(trace,  row=1, col=i+1)
 
