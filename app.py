@@ -821,6 +821,50 @@ def line_plot(parameter, df):
 
   st.plotly_chart(fig)
 
+def animate_hc(df0, df):
+  df_gc = pd.read_csv('成長曲線.csv')
+  
+  #df0 = df.drop_duplicates('ダミーID', keep='first')
+
+  df1 = df.drop_duplicates('ダミーID', keep='last')
+
+  common_patients = set(df1['ダミーID'].unique()) & (set(df0['ダミーID'].unique()))
+
+  df = pd.concat([df0, df1])
+  df = df[df['ダミーID'].isin(common_patients)]
+
+  #複数のヘルメットを使用している患者を除外
+  df_helmet = df[df['ヘルメット'] != '経過観察']
+  helmet_counts = df_helmet.groupby('ダミーID')['ヘルメット'].nunique()
+  common_patients = helmet_counts[helmet_counts > 1].index.tolist()
+
+  df = df[~df['ダミーID'].isin(common_patients)]
+
+  fig = px.scatter(df, x='月齢', y='頭囲', symbol = '治療前の月齢', facet_col = 'ヘルメット',
+                   hover_data=['ダミーID', '治療期間', '治療前月齢', 'ヘルメット'] + parameters, category_orders=category_orders, animation_frame='治療ステータス', animation_group='ダミーID', color_discrete_sequence=colors)
+  i=0
+  for i in range(len(df['ヘルメット'].unique())):
+    #正常範囲
+    # fig.add_trace(go.Scatter(x=[df['月齢'].min(), df['月齢'].max()], y=borders[parameter], mode='lines', line=dict(color='gray', dash = 'dot'), name=parameter+'の正常との境界'), row=1, col=i+1)
+
+    #成長曲線
+    fig_px = px.line(ddf_gcf, x='月齢', y='頭囲', color='sex', line_group='name')
+    for trace in fig_px.data:
+      fig.add_trace(trace,  row=1, col=i+1)
+
+  fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
+  fig.update_yaxes(range = [df['頭囲'].min()-2,df['頭囲'].max()+2])
+
+  #width = 800*(i+1)
+  width = 800*len(df['ヘルメット'].unique())
+
+  fig.update_layout(height=800, width=width, title='頭囲の治療前後の変化')
+
+  for annotation in fig.layout.annotations:
+    annotation.text = annotation.text.split('=')[-1]
+
+  st.plotly_chart(fig)
+
 # 95%信頼区間を計算する関数
 def calc_ci(group):
     mean = group.mean()
@@ -1026,6 +1070,10 @@ if submit_button:
     st.write('▶を押すと治療前後の変化が見られます。')
     animate_BI_PSR(filtered_df0, filtered_df)
     st.markdown("---")
+
+    animate_hc(filtered_df0, filtered_df)
+    st.markdown("---")
+  
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
       st.markdown("---")
