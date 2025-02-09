@@ -1150,6 +1150,8 @@ if submit_button:
   
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
+      result = make_confusion_matrix(filtered_df, parameter)
+      st.dataframe(result, width=800)
       st.markdown("---")
 
     if ~((min_age == 1) & (max_age == 12)):
