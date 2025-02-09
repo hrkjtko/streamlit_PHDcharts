@@ -43,7 +43,7 @@ df_tx_pre_last['治療前月齢'] = df_tx_pre_last['月齢']
 
 category_orders={'治療前PSRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'],
                    '治療前ASRレベル':['レベル1', 'レベル2', 'レベル3', 'レベル4'],
-                   '治療前短頭症':['軽症', '重症', '正常', '長頭'],
+                   '治療前短頭症':['重症', '軽症', '正常', '長頭'],
                    '治療前CA重症度':['正常', '軽症', '中等症', '重症', '最重症'],
                    '治療前CVAI重症度':['正常', '軽症', '中等症', '重症', '最重症'],
                    '治療前の月齢':[i for i in range(15)],
@@ -83,6 +83,40 @@ def add_pre_levels(df):
 
   return(df)
 
+def add_post_levels(df):
+  df['最終PSRレベル'] = ''
+  df['最終PSRレベル'] = df['最終PSRレベル'].mask(df['後頭部対称率']>=90, 'レベル1')
+  df['最終PSRレベル'] = df['最終PSRレベル'].mask(df['後頭部対称率']<90, 'レベル2')
+  df['最終PSRレベル'] = df['最終PSRレベル'].mask(df['後頭部対称率']<85, 'レベル3')
+  df['最終PSRレベル'] = df['最終PSRレベル'].mask(df['後頭部対称率']<80, 'レベル4')
+
+  df['最終ASRレベル'] = ''
+  df['最終ASRレベル'] = df['最終ASRレベル'].mask(df['前頭部対称率']>=90, 'レベル1')
+  df['最終ASRレベル'] = df['最終ASRレベル'].mask(df['前頭部対称率']<90, 'レベル2')
+  df['最終ASRレベル'] = df['最終ASRレベル'].mask(df['前頭部対称率']<85, 'レベル3')
+  df['最終ASRレベル'] = df['最終ASRレベル'].mask(df['前頭部対称率']<80, 'レベル4')
+
+  df['最終CA重症度'] = '正常'
+  df['最終CA重症度'] = df['最終CA重症度'].mask(df['CA']>6, '軽症')
+  df['最終CA重症度'] = df['最終CA重症度'].mask(df['CA']>9, '中等症')
+  df['最終CA重症度'] = df['最終CA重症度'].mask(df['CA']>13, '重症')
+  df['最終CA重症度'] = df['最終CA重症度'].mask(df['CA']>17, '最重症')
+
+  df['最終CVAI重症度'] = '正常'
+  df['最終CVAI重症度'] = df['最終CVAI重症度'].mask(df['CVAI']>5, '軽症')
+  df['最終CVAI重症度'] = df['最終CVAI重症度'].mask(df['CVAI']>7, '中等症')
+  df['最終CVAI重症度'] = df['最終CVAI重症度'].mask(df['CVAI']>10, '重症')
+  df['最終CVAI重症度'] = df['最終CVAI重症度'].mask(df['CVAI']>14, '最重症')
+
+  df['最終短頭症'] = ''
+  df['最終短頭症'] = df['最終短頭症'].mask(df['短頭率']>126, '長頭')
+  df['最終短頭症'] = df['最終短頭症'].mask(df['短頭率']<=126, '正常')
+  df['最終短頭症'] = df['最終短頭症'].mask(df['短頭率']<106, '軽症')
+  df['最終短頭症'] = df['最終短頭症'].mask(df['短頭率']<103, '中等症')
+  df['最終短頭症'] = df['最終短頭症'].mask(df['短頭率']<100, '重症')
+
+  return(df)
+
 df_tx_pre_last = add_pre_levels(df_tx_pre_last)
 
 #経過も利用する場合
@@ -104,6 +138,12 @@ df_tx_post = pd.merge(df_tx_post, df_tx_pre_last[['ダミーID','治療前PSRレ
 df_tx_pre_post = pd.concat([df_tx_pre_last, df_tx_post])
 
 #df_tx_pre_post = pd.merge(df_tx_pre_post, df_h, on='ダミーID', how='left')
+
+df_tx_post_last = df_tx_post.drop_duplicates('ダミーID', keep='last')
+
+df_tx_post_last = add_post_levels(df_tx_post_last)
+
+df_tx_pre_post = pd.merge(df_tx_pre_post, df_tx_post_last[['ダミーID','最終PSRレベル', '最終ASRレベル', '最終短頭症', '最終CA重症度', '最終CVAI重症度']], on='ダミーID', how='left')
 
 #経過観察
 df_first = add_pre_levels(df_first)
@@ -942,6 +982,37 @@ def make_table(parameter, df, co = False):
 
   return (result)
 
+def make_confusion_matrix(df, parameter):
+  parameter_category_names = {'短頭率': '短頭症', '前頭部対称率':'ASRレベル', 'CA':'CA重症度', '後頭部対称率':'PSRレベル', 'CVAI':'CVAI重症度', 'CI':'短頭症'}
+  parameter_category_name = parameter_category_names[parameter]
+
+  order = category_orders['治療前'+parameter_category_name]
+
+  for_pivot_df = df.drop_duplicates('ダミーID')
+
+  pivot_table = for_pivot_df.pivot_table(index="治療前" + parameter_category_name, columns="最終" + parameter_category_name, aggfunc="size", fill_value=0)
+
+  # 各行の合計を計算
+  pivot_table["Total"] = pivot_table.sum(axis=1)
+
+  # 割合（行方向の合計で割る）
+  pivot_table_percentage = 2 * pivot_table.div(pivot_table.sum(axis=1), axis=0) * 100
+
+  # % 付きの文字列に変換
+  pivot_table_percentage = pivot_table_percentage.round(1).astype(str) + "%"
+
+  # 人数と割合を結合
+  pivot_table_combined = pivot_table.astype(str) + " (" + pivot_table_percentage + ")"
+
+  pivot_table_combined["Total"] = pivot_table["Total"].astype(str)
+
+  pivot_table_combined = pivot_table_combined.reindex(index=order, columns=order + ["Total"])
+
+  pivot_table_combined = pivot_table_combined.fillna('0 (0.0%)')
+
+  return(pivot_table_combined)
+
+
 ##関数パート終了
 
 st.markdown('<div style="text-align: left; color:black; font-size:36px; font-weight: bold;">位置的頭蓋変形の診療に関するデータビジュアライゼーション</div>', unsafe_allow_html=True)
@@ -982,6 +1053,9 @@ for parameter in parameters:
   st.write('')
   st.write(parameter+'の治療前後の変化（1か月以上の治療）')
   graham(df_table, parameter)
+
+  result = make_confusion_matrix(df_table, parameter)
+  st.dataframe(result, width=800)
   
   result = make_table(parameter, df_table)
   #st.table(result)
