@@ -842,8 +842,8 @@ def animate(parameter, df0, df):
 
   st.plotly_chart(fig)
 
-def line_plot(parameter, df, df1=False):
-  if df1:
+def line_plot(parameter, df, df1=None):
+  if df1 is not None:
     df_fig = pd.concat([df, df1])
   else:
     df_fig = df.copy()
