@@ -842,8 +842,11 @@ def animate(parameter, df0, df):
 
   st.plotly_chart(fig)
 
-def line_plot(parameter, df):
-  df_fig = df.copy()
+def line_plot(parameter, df, df1=False):
+  if df1:
+    df_fig = pd.concat([df, df1])
+  else:
+    df_fig = df.copy()
   if '治療前の月齢' not in df_fig.columns:
     df_fig['初診時の月齢'] = df_fig['治療前月齢'].apply(lambda x: np.floor(x) if pd.notnull(x) else np.nan)
     symbol = '初診時の月齢'
@@ -1150,6 +1153,7 @@ if submit_button:
   
     for parameter in parameters:
       animate(parameter, filtered_df0, filtered_df)
+      line_plot(parameter, filtered_df0, filtered_df)
       result = make_confusion_matrix(filtered_df, parameter)
       st.dataframe(result, width=800)
       st.markdown("---")
