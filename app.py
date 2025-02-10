@@ -858,8 +858,8 @@ def line_plot(parameter, df, df1=None):
 
   fig = px.line(df_fig, x='月齢', y=parameter, line_group='ダミーID', color=levels[parameter], symbol = symbol, category_orders=category_orders, color_discrete_sequence=colors)
 
-  fig.update_xaxes(range = [df['月齢'].min()-2,df['月齢'].max()+2])
-  fig.update_yaxes(range = [df[parameter].min()-2,df[parameter].max()+2])
+  fig.update_xaxes(range = [df_fig['月齢'].min()-2,df_fig['月齢'].max()+2])
+  fig.update_yaxes(range = [df_fig[parameter].min()-2,df_fig[parameter].max()+2])
   fig.update_layout(width=900, title='治療による' + parameter + 'の変化')
 
   st.plotly_chart(fig)
